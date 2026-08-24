@@ -705,10 +705,10 @@
             let selectedDate = new Date();
             let editingEvent = null;
 
-            const PERMANENT_EVENTS = ['2026-09-08', '2026-10-09'];
+            const PERMANENT_EVENTS = ['2026-09-09', '2026-10-10'];
             const PERMANENT_EVENTS_DATA = {
-              '2026-09-08': { title: '🦉🎉', time: '', description: 'Happy Birthday!' },
-              '2026-10-09': { title: "🍵🎉", time: '', description: 'Password to my locked notes' }
+              '2026-09-09': { title: '🦉🎉', time: '', description: 'Happy Birthday!' },
+              '2026-10-10': { title: "🍵🎉", time: '', description: 'Password to my locked notes' }
             };
 
             function loadEvents() {
@@ -746,7 +746,9 @@
             initializePermanentEvents();
 
             function getEventsForDate(date) {
-              const dateStr = date.toISOString().split('T')[0];
+              const dateStr = date.getFullYear() + '-' +
+                             String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                             String(date.getDate()).padStart(2, '0');
               return loadEvents().filter(e => e.date === dateStr);
             }
 
@@ -792,7 +794,9 @@
             function createDayElement(dateObj, isOtherMonth) {
               const dayEl = document.createElement('div');
               dayEl.className = 'cal-day';
-              dayEl.dataset.date = dateObj.toISOString().split('T')[0];
+              dayEl.dataset.date = dateObj.getFullYear() + '-' +
+                                   String(dateObj.getMonth() + 1).padStart(2, '0') + '-' +
+                                   String(dateObj.getDate()).padStart(2, '0');
 
               if (isOtherMonth) {
                 dayEl.classList.add('other-month');
@@ -918,7 +922,9 @@
               if (!title) { alert('Please enter event title'); return; }
 
               const events = loadEvents();
-              const dateStr = selectedDate.toISOString().split('T')[0];
+              const dateStr = selectedDate.getFullYear() + '-' +
+                             String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' +
+                             String(selectedDate.getDate()).padStart(2, '0');
 
               if (editingEvent) {
                 if (isPermanentEvent(editingEvent)) { alert('Cannot edit permanent events'); return; }
@@ -1346,6 +1352,7 @@
             photos: [
               { url: 'https://i.pinimg.com/1200x/6a/3f/ac/6a3fac11f434574aeb030d56f7c4a349.jpg', description: 'Where are shared dream started'},
               { url: 'https://i.pinimg.com/736x/23/6f/b1/236fb15253ecf26bd71a9f916491cffc.jpg', description: 'What should I draw?'},
+              { url: 'https://i.pinimg.com/736x/1a/c2/a1/1ac2a139fb0ea6b8bc0e1ac81bd689d5.jpg', description: ''},
               { url: 'https://i.pinimg.com/1200x/56/c6/ec/56c6ec4df633a8d61d8a5f9ee1146e7e.jpg', description: 'Went to the beach to cool off.'},
               { url: 'https://i.pinimg.com/736x/88/c3/1e/88c31e5ac1c4c0882c69b273751c6f1d.jpg', description: 'Our first trophy playing together!'},
               { url: 'https://i.pinimg.com/1200x/31/e5/c8/31e5c8d7a23f6823c7840074d92385a0.jpg', description: 'Went to grandma\'s house and found this owl. Nii-chan said it looks like me!'},
@@ -1364,11 +1371,12 @@
               { url: 'https://i.pinimg.com/1200x/08/89/29/088929ac5639d8b1659863de7dd2799f.jpg', description: 'While Mom and Dad are busy preparing outside, Nii-chan and I are having fun inside'},
               { url: 'https://i.pinimg.com/736x/cd/88/69/cd8869e0e5e2054043a0101be4252679.jpg', description: 'I love it when we hold hands'},
               { url: 'https://i.pinimg.com/736x/eb/f9/68/ebf96894301ab12a0d8f71ddafc22304.jpg', description: 'Nii-chan said he loves seeing his cock going in and out of me'},
+              { url: 'https://i.pinimg.com/736x/48/48/38/484838abac2e2258cbda40d3242ecbd5.jpg', description: ''},
               { url: 'https://i.pinimg.com/736x/7b/4d/06/7b4d0653bee7f3bdbaabe252938e3649.jpg', description: ''},
               { url: 'https://i.pinimg.com/736x/29/46/f1/2946f156f3c7d418b19509b975bc220d.jpg', description: 'Nii-chan\'s so hot'},
               { url: 'https://i.pinimg.com/736x/36/d2/3b/36d23b5dbb5efec99d4de7a7897ecdc1.jpg', description: 'Nii-chan said I can eat his \'popsicle\' anytime I want ;)'},
               { url: 'https://i.pinimg.com/736x/81/09/08/8109086a16b442943a3b9c383d0a228d.jpg', description: ''},
-              { url: 'https://i.pinimg.com/1200x/62/83/71/6283719f78e7a97dbc78ded0f76aba02.jpg', description: 'Making out in Dad\'s car'},
+              { url: 'https://i.pinimg.com/1200x/62/83/71/6283719f78e7a97dbc78ded0f76aba02.jpg', description: 'Making love in Dad\'s car'},
               { url: 'https://i.pinimg.com/736x/ce/10/c5/ce10c562ab5ebf4a8b08d89bb40a9851.jpg', description: 'My first time and it was nerve cracking. Nii-chan loved it though'},
               { url: './Gallery/Screenshots/Camera.png', description: 'Nii-chan wanted to take videos for memories' },
               { url: 'https://i.pinimg.com/736x/0b/51/5d/0b515d218a255171cd99c043f46db424.jpg', description: ''},
@@ -1381,10 +1389,13 @@
             name: 'What if',
             photos: [
               { url: 'https://i.pinimg.com/736x/9e/51/b4/9e51b4db27983e5243c9218e0d6a8aaf.jpg', description: ''},
+              { url: 'https://i.pinimg.com/736x/6d/39/62/6d3962af6f9de03460af87b90492f5dc.jpg', description: 'Cold night swimming to clear my head'},
               { url: 'https://i.pinimg.com/736x/2c/7c/e7/2c7ce757f4afebb7a56a04e8cf3f2b76.jpg', description: 'Can\'t even look at myself in the mirror because it reminds me of you'},
+              { url: 'https://i.pinimg.com/736x/5f/87/bc/5f87bcc9dc7c468b12b002ef587bec75.jpg', description: 'I guess that was too much'},
               { url: 'https://i.pinimg.com/736x/b7/72/c8/b772c8890a77ecf60784ad29ec6a0ad7.jpg', description: ''},
               { url: 'https://i.pinimg.com/736x/db/e0/6b/dbe06b94c7afd1c793748980d23d7842.jpg', description: 'My new comfort'},
               { url: 'https://i.pinimg.com/736x/02/8f/e1/028fe14225a0c9dbc8bd66e669f04dee.jpg', description: 'He said I\'m lukewarm. He doesn\'t need me anymore. I\'m not even worth his time'},
+              { url: 'https://i.pinimg.com/736x/b6/d7/6e/b6d76e4f744ee706ae498c4f580fbf91.jpg', description: ''},
               { url: 'https://i.pinimg.com/736x/2d/96/4f/2d964fe43f901c2068a9dd1d18546a21.jpg', description: 'Begged mom to buy me sleeping pills'},
               { url: 'https://i.pinimg.com/736x/aa/bf/f6/aabff68b2bbda9c7c2229a43d82c0709.jpg', description: 'What if...'},
               { url: 'https://i.pinimg.com/736x/df/ef/65/dfef6515525aef5d85fc0de91f6b1456.jpg', description: 'The night you left me'},
