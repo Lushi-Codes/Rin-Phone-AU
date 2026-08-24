@@ -631,6 +631,7 @@
               try{
                 if (expr === '543') {
                   window.niiChanUnlocked = true;
+                  window.videoGalleryUnlocked = true;
                   set('❤️');
                   expr = '';
                   return;
@@ -1369,6 +1370,7 @@
               { url: 'https://i.pinimg.com/736x/81/09/08/8109086a16b442943a3b9c383d0a228d.jpg', description: ''},
               { url: 'https://i.pinimg.com/1200x/62/83/71/6283719f78e7a97dbc78ded0f76aba02.jpg', description: 'Making out in Dad\'s car'},
               { url: 'https://i.pinimg.com/736x/ce/10/c5/ce10c562ab5ebf4a8b08d89bb40a9851.jpg', description: 'My first time and it was nerve cracking. Nii-chan loved it though'},
+              { url: './Gallery/Screenshots/Camera.png', description: 'Nii-chan wanted to take videos for memories' },
               { url: 'https://i.pinimg.com/736x/0b/51/5d/0b515d218a255171cd99c043f46db424.jpg', description: ''},
               { url: 'https://i.pinimg.com/736x/67/1d/40/671d40ea38edc5186d72cd977f565410.jpg', description: 'Nii-chan couldn\'t help it'},
               { url: 'https://i.pinimg.com/736x/f7/27/ad/f727adf6db9b165a0468cf0fedacbf01.jpg', description: 'Going home with you'},
@@ -2203,6 +2205,7 @@
         let selfiePhotos = [];
         let shuffledPhotos = [];
         let shufflePosition = 0;
+        let previousPhotoUrl = '';
 
         function loadSelfiePhotos() {
           const container = document.querySelector('#app-camera .screen-body');
@@ -2234,10 +2237,16 @@
             cameraStream.getTracks().forEach(track => track.stop());
             cameraStream = null;
           }
+          stopVideo();
+          const overlay = document.getElementById('videoGalleryOverlay');
+          if (overlay) {
+            overlay.classList.remove('active');
+          }
         }
 
         function initializeCamera() {
           loadSelfiePhotos();
+          setupVideoGallery();
           setupCameraFeed();
         }
 
@@ -2263,6 +2272,7 @@
               } else {
                 cameraIndex = 0;
               }
+              previousPhotoUrl = '';
               closeCameraStream();
               updateCameraDisplay();
             });
@@ -2282,6 +2292,7 @@
           const img = document.getElementById('cameraImage');
           const placeholder = document.getElementById('cameraPlaceholder');
           const modeLabel = document.getElementById('cameraModeLabel');
+          const thumbnail = document.getElementById('cameraThumbnail');
 
           if (cameraMode === 'selfie') {
             // Selfie mode: show shuffled photos
@@ -2297,12 +2308,26 @@
                 img.style.display = 'block';
               }
               if (placeholder) placeholder.style.display = 'none';
+
+              // Thumbnail shows previous photo
+              if (thumbnail) {
+                if (previousPhotoUrl) {
+                  thumbnail.style.backgroundImage = `url('${previousPhotoUrl}')`;
+                  thumbnail.style.backgroundSize = 'cover';
+                  thumbnail.style.backgroundPosition = 'center';
+                } else {
+                  thumbnail.style.backgroundImage = 'none';
+                }
+              }
+
+              previousPhotoUrl = photoUrl;
             } else {
               if (placeholder) {
                 placeholder.style.display = 'flex';
                 placeholder.textContent = '📷\nNo photos linked';
               }
               if (img) img.style.display = 'none';
+              if (thumbnail) thumbnail.style.backgroundImage = 'none';
             }
           } else {
             // Capture mode: real camera
@@ -2328,3 +2353,150 @@
           }
         }
 
+        // ==================== VIDEO GALLERY ====================
+        let videoFiles = [];
+        let currentVideoIndex = 0;
+        window.videoGalleryUnlocked = false;
+
+        function loadVideoFiles() {
+          const container = document.querySelector('#app-camera .screen-body');
+          if (!container) return;
+          videoFiles = Array.from(container.querySelectorAll('.video-file'))
+            .map(el => el.dataset.url)
+            .filter(url => url && url.trim());
+        }
+
+        function setupVideoGallery() {
+          loadVideoFiles();
+          const thumbnail = document.getElementById('cameraThumbnail');
+          const overlay = document.getElementById('videoGalleryOverlay');
+          const backBtn = document.getElementById('videoGalleryBack');
+          const swipeLeft = document.getElementById('swipeLeft');
+          const swipeRight = document.getElementById('swipeRight');
+
+          if (thumbnail) {
+            thumbnail.addEventListener('click', () => {
+              if (videoFiles.length === 0 || !window.videoGalleryUnlocked || cameraMode !== 'back') return;
+              showVideoGallery();
+            });
+          }
+
+          if (backBtn) {
+            backBtn.addEventListener('click', () => {
+              stopVideo();
+              overlay.classList.remove('active');
+            });
+          }
+
+          if (swipeLeft) {
+            swipeLeft.addEventListener('click', () => {
+              currentVideoIndex = (currentVideoIndex - 1 + videoFiles.length) % videoFiles.length;
+              displayCurrentVideo();
+            });
+          }
+
+          if (swipeRight) {
+            swipeRight.addEventListener('click', () => {
+              currentVideoIndex = (currentVideoIndex + 1) % videoFiles.length;
+              displayCurrentVideo();
+            });
+          }
+
+        }
+
+        function showVideoGallery() {
+          const overlay = document.getElementById('videoGalleryOverlay');
+          currentVideoIndex = 0;
+          displayCurrentVideo();
+          overlay.classList.add('active');
+        }
+
+        function displayCurrentVideo() {
+          const video = document.getElementById('galleryVideo');
+          const counter = document.getElementById('videoCounter');
+          if (video && videoFiles[currentVideoIndex]) {
+            video.src = videoFiles[currentVideoIndex];
+            video.play().catch(() => {});
+          }
+          if (counter) {
+            counter.textContent = `${currentVideoIndex + 1} / ${videoFiles.length}`;
+          }
+        }
+
+        function stopVideo() {
+          const video = document.getElementById('galleryVideo');
+          if (video) {
+            video.pause();
+            video.src = '';
+          }
+        }
+
+        function showPinOverlay() {
+          const pinOverlay = document.getElementById('pinUnlockOverlay');
+          pinInput = '';
+          updatePinDisplay();
+          pinOverlay.classList.add('active');
+        }
+
+        function setupPinKeypad() {
+          const keypad = document.getElementById('pinKeypad');
+          if (!keypad) return;
+
+          for (let i = 1; i <= 9; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'pin-key';
+            btn.textContent = i;
+            btn.addEventListener('click', () => addPinDigit(i));
+            keypad.appendChild(btn);
+          }
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'pin-key';
+          deleteBtn.textContent = '⌫';
+          deleteBtn.addEventListener('click', deletePinDigit);
+          keypad.appendChild(deleteBtn);
+
+          const zeroBtn = document.createElement('button');
+          zeroBtn.className = 'pin-key';
+          zeroBtn.textContent = '0';
+          zeroBtn.addEventListener('click', () => addPinDigit(0));
+          keypad.appendChild(zeroBtn);
+
+          const okBtn = document.createElement('button');
+          okBtn.className = 'pin-key';
+          okBtn.textContent = '✓';
+          okBtn.addEventListener('click', checkPin);
+          keypad.appendChild(okBtn);
+        }
+
+        let pinInput = '';
+
+        function addPinDigit(digit) {
+          if (pinInput.length < 3) {
+            pinInput += digit;
+            updatePinDisplay();
+          }
+        }
+
+        function deletePinDigit() {
+          pinInput = pinInput.slice(0, -1);
+          updatePinDisplay();
+        }
+
+        function updatePinDisplay() {
+          const display = document.getElementById('pinDisplay');
+          if (display) {
+            display.textContent = pinInput.padEnd(3, '●').split('').join('');
+          }
+        }
+
+        function checkPin() {
+          if (pinInput === '543') {
+            window.videoGalleryUnlocked = true;
+            document.getElementById('pinUnlockOverlay').classList.remove('active');
+            showVideoGallery();
+          } else {
+            pinInput = '';
+            updatePinDisplay();
+          }
+        }
