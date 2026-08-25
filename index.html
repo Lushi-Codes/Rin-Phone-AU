@@ -160,7 +160,23 @@
         <div style="width: 50px;"></div>
       </div>
       <div class="screen-body">
-        <p>Camera placeholder — access is allowed but non-functional in this demo.</p>
+        <div style="text-align: center; padding: 20px;">
+          <div id="cameraModeLabel" style="margin-bottom: 20px;">
+            <span style="color: #666;">Capture Mode</span>
+          </div>
+          <button id="cameraFlip" style="background: #00a896; border: none; color: #000; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: 500; margin-bottom: 20px;">↔️</button>
+          <div style="margin: 20px 0; font-size: 48px;" id="cameraDisplay">📷</div>
+          <button id="cameraCapture" style="background: #00a896; border: none; color: #000; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: 500; margin-bottom: 20px;">Capture</button>
+          <div id="cameraThumbnail" style="width: 60px; height: 60px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; margin: 0 auto; background-size: cover; background-position: center;"></div>
+        </div>
+        <!-- Hidden selfie photos for camera app -->
+        <div style="display: none;">
+          <div class="selfie-photo" data-url="https://i.pinimg.com/736x/cd/88/69/cd8869e0e5e2054043a0101be4252679.jpg"></div>
+          <div class="selfie-photo" data-url="https://i.pinimg.com/1200x/6a/79/47/6a794774298e0c0328cdc37d742d4a46.jpg"></div>
+          <div class="selfie-photo" data-url="https://i.pinimg.com/736x/36/d2/3b/36d23b5dbb5efec99d4de7a7897ecdc1.jpg"></div>
+          <div class="selfie-photo" data-url="https://i.pinimg.com/736x/29/46/f1/2946f156f3c7d418b19509b975bc220d.jpg"></div>
+          <div class="selfie-photo" data-url="https://i.pinimg.com/1200x/08/89/29/088929ac5639d8b1659863de7dd2799f.jpg"></div>
+        </div>
       </div>
     </div>
 

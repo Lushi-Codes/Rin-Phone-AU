@@ -105,16 +105,16 @@
   .video-gallery-back {
     background: none;
     border: none;
-    color: #4f9eff;
+    color: #00a896;
     font-size: 16px;
     cursor: pointer;
     padding: 8px 16px;
     border-radius: 20px;
-    background: rgba(79, 158, 255, 0.2);
-    border: 1px solid #4f9eff;
+    background: rgba(0, 168, 150, 0.2);
+    border: 1px solid #00a896;
   }
   .video-gallery-back:active {
-    background: rgba(79, 158, 255, 0.3);
+    background: rgba(0, 168, 150, 0.3);
   }
   .video-gallery-content {
     flex: 1;
@@ -156,62 +156,14 @@
     color: rgba(255, 255, 255, 1);
   }
 
-  /* PIN Unlock */
-  .pin-unlock-overlay {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.95);
-    z-index: 150;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  .pin-unlock-overlay.active {
-    display: flex;
-  }
-  .pin-input-group {
-    text-align: center;
-    gap: 20px;
-    display: flex;
-    flex-direction: column;
-  }
-  .pin-input-label {
-    color: #999;
-    font-size: 14px;
-  }
-  .pin-input-display {
-    font-size: 32px;
-    letter-spacing: 16px;
-    color: #4f9eff;
-    min-height: 40px;
-  }
-  .pin-keypad {
-    display: grid;
-    grid-template-columns: repeat(3, 50px);
-    gap: 12px;
-  }
-  .pin-key {
-    width: 50px;
-    height: 50px;
-    background: #333;
-    border: 1px solid #555;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 18px;
-    cursor: pointer;
-  }
-  .pin-key:active {
-    background: #555;
-  }
 </style>
 
 <!-- Videos — add more by copying a .video-file block.
      data-url is the direct link to the MP4 video file. -->
 <div class="video-file" data-url="Gallery/Videos/1.mp4"></div>
-<div class="video-file" data-url="Gallery/Videos/2.mp4"></div>
+<div class="video-file" data-url="Gallery/Videos/5.mp4"></div>
 <div class="video-file" data-url="Gallery/Videos/3.mp4"></div>
-<div class="video-file" data-url="Gallery/Videos/4.mp4"></div>
+<div class="video-file" data-url="Gallery/Videos/6.mp4"></div>
 
 <!-- Selfie photos — add more by copying a .selfie-photo block.
      data-url is the image URL to display in selfie mode. -->

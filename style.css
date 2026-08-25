@@ -111,6 +111,31 @@
       transform: scale(0.92);
     }
 
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: #ff4444;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      border: 2px solid #05070d;
+    }
+
+    .app-icon {
+      position: relative;
+    }
+
+    .app-icon.has-notification .icon-box {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3), 0 0 10px rgba(255, 68, 68, 0.4);
+    }
+
     .icon-box {
       width: 52px;
       height: 52px;

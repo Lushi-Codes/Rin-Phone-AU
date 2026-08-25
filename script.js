@@ -43,6 +43,60 @@
       } catch (e) { /* ignore */ }
     })();
 
+    // Notification system
+    window.appNotifications = {};
+    window.notificationTimers = {};
+
+    function getDataAppValue(appId) {
+      const mapping = {
+        'app-camera': 'camera',
+        'app-gallery': 'gallery',
+        'app-notes': 'notes',
+        'app-ytmusic': 'music'
+      };
+      return mapping[appId] || appId;
+    }
+
+    function showNotifications(appIds) {
+      appIds.forEach(appId => {
+        const icon = document.querySelector(`[data-app="${appId}"]`);
+        if (icon) {
+          icon.classList.add('has-notification');
+          const badge = document.createElement('div');
+          badge.className = 'notification-badge';
+          badge.textContent = '!';
+          if (!icon.querySelector('.notification-badge')) {
+            icon.appendChild(badge);
+          }
+          window.appNotifications[appId] = true;
+        }
+      });
+    }
+
+    function removeNotification(appId) {
+      const icon = document.querySelector(`[data-app="${appId}"]`);
+      if (icon) {
+        icon.classList.remove('has-notification');
+        const badge = icon.querySelector('.notification-badge');
+        if (badge) badge.remove();
+      }
+      delete window.appNotifications[appId];
+    }
+
+    function clearNotificationTimer(appId) {
+      if (window.notificationTimers[appId]) {
+        clearTimeout(window.notificationTimers[appId]);
+        delete window.notificationTimers[appId];
+      }
+    }
+
+    function removeNotificationAfterDelay(appId) {
+      clearNotificationTimer(appId);
+      window.notificationTimers[appId] = setTimeout(() => {
+        removeNotification(appId);
+      }, 10000);
+    }
+
     function openApp(appId, el) {
   // If caller passed the icon element, use it to check lock state
   if (el && el.classList && el.classList.contains('locked')) {
@@ -102,6 +156,12 @@
   // For accessibility, move focus into the opened screen
   const focusTarget = screen.querySelector('button, a, [tabindex]') || screen.querySelector('.screen-body');
   if (focusTarget && typeof focusTarget.focus === 'function') focusTarget.focus();
+
+  // Remove notification after 30 seconds of opening the app
+  const dataAppValue = getDataAppValue(appId);
+  if (window.appNotifications && window.appNotifications[dataAppValue]) {
+    removeNotificationAfterDelay(dataAppValue);
+  }
 }
 
         function closeApp(appId) {
@@ -632,12 +692,18 @@
                 if (expr === '543') {
                   window.niiChanUnlocked = true;
                   window.videoGalleryUnlocked = true;
-                  set('❤️');
+                  window.unlockedCode543 = true;
+                  showNotifications(['camera', 'gallery', 'notes']);
+                  if (window.loadSecretNotes) window.loadSecretNotes();
+                  set('🩷');
                   expr = '';
                   return;
                 }
                 if (expr === '090902') {
                   window.whatIfUnlocked = true;
+                  window.unlockedCode090902 = true;
+                  showNotifications(['music', 'gallery', 'notes']);
+                  if (window.loadSecretNotes) window.loadSecretNotes();
                   set('🔪');
                   expr = '';
                   return;
@@ -726,7 +792,10 @@
             }
 
             function initializePermanentEvents() {
-              const events = loadEvents();
+              let events = loadEvents();
+              // Remove old permanent events that are no longer in PERMANENT_EVENTS
+              events = events.filter(e => !isPermanentEvent(e) || PERMANENT_EVENTS.includes(e.date));
+              // Add new permanent events if they don't exist
               PERMANENT_EVENTS.forEach(date => {
                 const exists = events.some(e => e.date === date && isPermanentEvent(e));
                 if (!exists) {
@@ -1224,6 +1293,8 @@
         // Initialize Nii-chan and What if albums - reset on every page refresh
         window.niiChanUnlocked = false;
         window.whatIfUnlocked = false;
+        window.unlockedCode543 = false;
+        window.unlockedCode090902 = false;
 
         function unlockNotes() {
           const password = document.getElementById('locked-notes-password').value;
@@ -1261,197 +1332,183 @@
             .then(html => {
               const parser = new DOMParser();
               const doc = parser.parseFromString(html, 'text/html');
-              const lockedNotes = Array.from(doc.querySelectorAll('.locked-note'))
+
+              // Get regular locked notes (not special code-based ones)
+              const lockedNotes = Array.from(doc.querySelectorAll('.locked-note:not([data-code])'))
                 .filter(el => el.querySelector('.note-text')?.textContent?.trim())
-                .map(el => el.cloneNode(true));
+                .map(el => ({
+                  element: el.cloneNode(true),
+                  dateStr: el.querySelector('.note-date')?.textContent?.trim() || ''
+                }));
+
+              // Get special notes and filter by unlock status
+              const specialNotes = Array.from(doc.querySelectorAll('.locked-note[data-code]'))
+                .filter(el => {
+                  const code = el.getAttribute('data-code');
+                  if (code === '543') return window.unlockedCode543;
+                  if (code === '090902') return window.unlockedCode090902;
+                  return false;
+                })
+                .map(el => ({
+                  element: el.cloneNode(true),
+                  dateStr: el.querySelector('.note-date')?.textContent?.trim() || ''
+                }));
+
+              // Combine and sort by date
+              const allNotes = [...lockedNotes, ...specialNotes];
+
+              // Sort notes by date (handling various date formats)
+              allNotes.sort((a, b) => {
+                const dateA = parseNoteDate(a.dateStr);
+                const dateB = parseNoteDate(b.dateStr);
+                return dateA - dateB;
+              });
 
               const container = document.getElementById('locked-notes-content');
-              if (lockedNotes.length === 0) {
-                container.innerHTML = '<div class="locked-notes-section"><div style="color: #999;">No locked notes yet</div></div>';
-              } else {
-                const html = lockedNotes.map(note => {
+              let contentHTML = '<div class="locked-notes-section">';
+
+              if (allNotes.length > 0) {
+                contentHTML += allNotes.map(item => {
+                  const note = item.element;
                   note.classList.remove('locked-note');
                   note.classList.add('note-card');
+
+                  const dataCode = note.getAttribute('data-code');
+                  if (dataCode) {
+                    const color = note.getAttribute('data-color');
+                    const rgba = `rgba(${parseInt(color.slice(1,3),16)}, ${parseInt(color.slice(3,5),16)}, ${parseInt(color.slice(5,7),16)}, 0.12)`;
+                    note.setAttribute('style', `background: ${rgba}; border-left: 4px solid ${color};`);
+                    note.removeAttribute('data-code');
+                    note.removeAttribute('data-color');
+                    note.removeAttribute('data-emoji');
+                  }
+
                   return note.outerHTML;
                 }).join('');
-                container.innerHTML = '<div class="locked-notes-section">' + html + '</div>';
+              } else {
+                contentHTML += '<div style="color: #999;">No locked notes yet</div>';
               }
+
+              contentHTML += '</div>';
+              container.innerHTML = contentHTML;
             })
             .catch(err => {
               console.error('Locked notes load error:', err);
               document.getElementById('locked-notes-content').innerHTML = '<div class="locked-notes-section"><div style="color: #ff6b6b;">Failed to load locked notes</div></div>';
             });
+
+          function parseNoteDate(dateStr) {
+            // Remove italic tags and extra text like "(Updated XX:XX)"
+            const cleanDate = dateStr.replace(/<[^>]*>/g, '').replace(/\s*\(Updated[^)]*\)/i, '').trim();
+
+            // Try to parse common date formats: "Month DD, YYYY" or "Month D, YYYY"
+            const months = {
+              'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
+              'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11
+            };
+
+            const match = cleanDate.match(/(\w+)\s+(\d+),\s+(\d{4})/);
+            if (match) {
+              const month = months[match[1]] || 0;
+              const day = parseInt(match[2]) || 1;
+              const year = parseInt(match[3]) || 2000;
+              return new Date(year, month, day).getTime();
+            }
+
+            // Fallback to Date.parse
+            return new Date(cleanDate).getTime();
+          }
         }
 
         // Gallery Functions
-        const albumData = {
-          screenshots: {
-            name: 'Screenshots',
-            photos: [
-              { url: 'https://i.pinimg.com/736x/83/43/3f/83433f69ab849136be158628a6cce422.jpg', description: 'Soon' },
-              { url: 'https://i.pinimg.com/736x/b8/eb/db/b8ebdb89c90b22061c271e3a0987e193.jpg', description: '' },
-              { url: 'https://i.pinimg.com/736x/98/ee/58/98ee581fdc1099dd1bd733c728ca998e.jpg', description: 'Getting better with my English' },
-              { url: 'https://i.pinimg.com/736x/27/5b/92/275b92c23b4bb74804be08f123304fdc.jpg', description: 'My classmate invited me to join their review session. No' },
-              { url: 'https://i.pinimg.com/736x/6b/93/a7/6b93a788bcde4a86eb6747f59d01921a.jpg', description: 'Practicing Doulingo Day 2' },
-              { url: 'https://i.pinimg.com/1200x/03/01/e5/0301e5ac13837c9418154e19b4d0729f.jpg', description: '' },
-              { url: './Gallery/Screenshots/Calculator.png', description: 'Hiddden Album' },
-            ]
-          },
-          downloaded: {
-            name: 'Downloaded',
-            photos: [
-              { url: 'https://i.pinimg.com/1200x/d2/57/b2/d257b2639861743851ea6f6620e7af47.jpg', description: '' },
-              { url: 'https://i.pinimg.com/1200x/fc/db/19/fcdb197c1707c148fea93e47a3d1caa5.jpg', description: '' },
-              { url: 'https://i.pinimg.com/736x/40/41/18/404118cce34cdc8fb9beda7959c16d8d.jpg', description: '' },
-              { url: 'https://i.pinimg.com/736x/9d/eb/49/9deb495838b0e76a7d59aefe57b87c49.jpg', description: 'The answer might be here' },
-              { url: 'https://i.pinimg.com/736x/da/b5/b7/dab5b77f3b79bf7651bc298ab748d402.jpg', description: 'A girl in my class suggested this (Brothers) cafe with her weird lookups' },
-              { url: 'https://i.pinimg.com/736x/5b/a0/c0/5ba0c0245cbaa3f0038dce62867f047a.jpg', description: 'Nii-chan did another hat trick! So proud of him!' },
-              { url: 'https://i.pinimg.com/1200x/80/5b/05/805b05d9fe6fb07522addb5724a1cc96.jpg', description: '' },
-              { url: 'https://i.pinimg.com/736x/a6/cc/70/a6cc7002fd2c76ff7dc7859c17a7b776.jpg', description: '' },
-              { url: 'https://i.pinimg.com/736x/6a/95/e5/6a95e51b8ca99712d9435b58e056799f.jpg', description: 'Rereading' },
-              { url: 'https://i.pinimg.com/736x/35/e9/3a/35e93af0265aa4eee224080b310d70ca.jpg', description: 'Nii-chan sent me a photo of his jersey' },
-              { url: 'https://i.pinimg.com/736x/e3/bf/87/e3bf87d36a27d847409415b5b4832874.jpg', description: 'Nii-chan\'s first week' },
-            ]
-          },
-          camera: {
-            name: 'Camera',
-            photos: [
-              { url: 'https://i.pinimg.com/736x/5b/74/04/5b7404077e8f01853b944fd3d802aa9c.jpg', description: 'That asshole sent me a ticket to his game. Didn\'t even bothered showing up his face ever since' },
-              { url: 'https://i.pinimg.com/736x/88/98/ed/8898eddee24a263882b58ba8983623b2.jpg', description: 'Are we seeing the same stars? I miss you, Nii-chan'},
-              { url: 'https://i.pinimg.com/736x/e2/d3/e5/e2d3e59cb3839d6d03bf1570ba1c166b.jpg', description: 'Late night practice'},
-              { url: 'https://i.pinimg.com/1200x/a0/36/f3/a036f3d578d0e23b5244070425cf7f8d.jpg', description: 'Nii-chan, the moon is beautiful tonight'},
-              { url: 'https://i.pinimg.com/736x/48/53/76/48537670953e57a957b74ff08cfbc2e4.jpg', description: 'We won Nii-chan! Are you proud of me?'},
-              { url: 'https://i.pinimg.com/1200x/3f/5f/29/3f5f296a27bebcc38ea94284c0ec7e48.jpg', description: 'Dinner. Yum yum' },
-              { url: 'https://i.pinimg.com/736x/28/0d/f7/280df7a8640f89b3bd000772232d0e23.jpg', description: 'Art Assignment' },
-              { url: 'https://i.pinimg.com/736x/fc/ae/ef/fcaeef015089142182a913aa459f60a3.jpg', description: 'Horror Movie night'},
-              { url: 'https://i.pinimg.com/736x/f5/9b/88/f59b8855311ecd815a3d1932fa49e547.jpg', description: 'It\'s colder without you around'},
-              { url: 'https://i.pinimg.com/736x/11/06/98/110698eb5b90e05bac7282b60979b972.jpg', description: ''},
-              { url: 'https://i.pinimg.com/736x/0f/9a/53/0f9a538b6453a63f878626f86aa1228f.jpg', description: ''},
-              { url: 'https://i.pinimg.com/736x/58/53/b5/5853b536a9075fd41315282b559c808e.jpg', description: ''},
-              { url: 'https://i.pinimg.com/1200x/16/39/68/1639681216dd1ed9223bfaad4f0663ee.jpg', description: 'Another day, another practice'},
-              { url: 'https://i.pinimg.com/736x/e4/57/40/e457401fe3cbbac352fe7a538491250c.jpg', description: 'Walking home alone for the first time'},
-              { url: 'https://i.pinimg.com/736x/8a/5b/5c/8a5b5cf9cdb4a51acd0e7bd6784a456d.jpg', description: 'See you soon, Nii-chan!'},
-              { url: 'https://i.pinimg.com/736x/e9/23/3e/e9233e3a54f284ecb80feb6aa7f8df09.jpg', description: ''},
-              { url: 'https://i.pinimg.com/736x/c9/fa/1d/c9fa1d06b277fbcdd42079c801bd0a1b.jpg', description: 'Walking home at night is the best! <3'},
-              { url: 'https://i.pinimg.com/1200x/54/c8/e3/54c8e3f03752514d8d9e432719ed9ebc.jpg', description: 'Nii-chan is exhausted from training camp'},
-              { url: 'https://i.pinimg.com/736x/10/c3/92/10c3920b053d67297e887ac568e89dfd.jpg', description: 'My heart skipped a bit'},
-              { url: 'https://i.pinimg.com/736x/96/e3/49/96e349897711d0f168fae21fbfa46d2a.jpg', description: 'Sunset (Lovers?)'},
-              { url: 'https://i.pinimg.com/736x/6f/7d/4d/6f7d4dc20f9a24f99b713535f3cdd1fe.jpg', description: ''},
-              { url: 'https://i.pinimg.com/736x/e7/68/50/e76850a3a0f00def55c8f19a99427d80.jpg', description: 'Practice match with Nii-chan!'},
-              { url: 'https://i.pinimg.com/736x/43/66/a9/4366a919c88df9baf76278b877bafe1a.jpg', description: 'Lady Luck is with me today!'},
-              { url: 'https://i.pinimg.com/736x/e7/56/8c/e7568cf071b14bbd74aafd03a6ba0661.jpg', description: 'Ready for practice with Nii-chan!'},
-              { url: 'https://i.pinimg.com/736x/0d/02/27/0d02271ddb70edea19fcd123200969f9.jpg', description: 'Nii-chan is the kindest person!'},
-              { url: 'https://i.pinimg.com/736x/ee/27/fc/ee27fc259adcfaab75021403005a89da.jpg', description: ''},
-              { url: 'https://i.pinimg.com/1200x/bb/db/82/bbdb8215449cb98cb515460452d3d7ef.jpg', description: 'Ice cream after Nii-chan\'s practice'},
-              { url: 'https://i.pinimg.com/736x/11/01/a4/1101a48b40d43223e48d1950fdfbcadf.jpg', description: 'Curry'},
-              
-            ]
-          },
-          favorites: {
-            name: 'Favorites',
-            photos: [
-              { url: 'https://i.pinimg.com/1200x/6a/3f/ac/6a3fac11f434574aeb030d56f7c4a349.jpg', description: 'Where are shared dream started'},
-              { url: 'https://i.pinimg.com/736x/23/6f/b1/236fb15253ecf26bd71a9f916491cffc.jpg', description: 'What should I draw?'},
-              { url: 'https://i.pinimg.com/736x/1a/c2/a1/1ac2a139fb0ea6b8bc0e1ac81bd689d5.jpg', description: ''},
-              { url: 'https://i.pinimg.com/1200x/56/c6/ec/56c6ec4df633a8d61d8a5f9ee1146e7e.jpg', description: 'Went to the beach to cool off.'},
-              { url: 'https://i.pinimg.com/736x/88/c3/1e/88c31e5ac1c4c0882c69b273751c6f1d.jpg', description: 'Our first trophy playing together!'},
-              { url: 'https://i.pinimg.com/1200x/31/e5/c8/31e5c8d7a23f6823c7840074d92385a0.jpg', description: 'Went to grandma\'s house and found this owl. Nii-chan said it looks like me!'},
-              { url: 'https://i.pinimg.com/736x/b3/29/56/b329561b4d6d9a49cfea101b4c5c1ddd.jpg', description: 'Summer Festival'},
-              { url: 'https://i.pinimg.com/736x/a8/b6/d8/a8b6d8add153f1a9a73cfbc4e2ae6518.jpg', description: 'Us playing together'},
-              { url: 'https://i.pinimg.com/736x/e1/00/cd/e100cd7cf24881c81374dd31462583b4.jpg', description: 'SAE 🩷 = RIN 🩵'},
-              { url: 'https://i.pinimg.com/736x/f5/68/45/f56845b16c3aed636f578a7daa6b095c.jpg', description: 'Almost fell down. Nii-chan is my savior!'},
-              
+        let albumData = null;
 
-            ]
-          },
-          niiChan: {
-            name: 'Nii-chan',
-            photos: [
-              { url: 'https://i.pinimg.com/1200x/6a/79/47/6a794774298e0c0328cdc37d742d4a46.jpg', description: 'Nii-chan wanted to mark me before he left for Spain'},
-              { url: 'https://i.pinimg.com/1200x/08/89/29/088929ac5639d8b1659863de7dd2799f.jpg', description: 'While Mom and Dad are busy preparing outside, Nii-chan and I are having fun inside'},
-              { url: 'https://i.pinimg.com/736x/cd/88/69/cd8869e0e5e2054043a0101be4252679.jpg', description: 'I love it when we hold hands'},
-              { url: 'https://i.pinimg.com/736x/eb/f9/68/ebf96894301ab12a0d8f71ddafc22304.jpg', description: 'Nii-chan said he loves seeing his cock going in and out of me'},
-              { url: 'https://i.pinimg.com/736x/48/48/38/484838abac2e2258cbda40d3242ecbd5.jpg', description: ''},
-              { url: 'https://i.pinimg.com/736x/7b/4d/06/7b4d0653bee7f3bdbaabe252938e3649.jpg', description: ''},
-              { url: 'https://i.pinimg.com/736x/29/46/f1/2946f156f3c7d418b19509b975bc220d.jpg', description: 'Nii-chan\'s so hot'},
-              { url: 'https://i.pinimg.com/736x/36/d2/3b/36d23b5dbb5efec99d4de7a7897ecdc1.jpg', description: 'Nii-chan said I can eat his \'popsicle\' anytime I want ;)'},
-              { url: 'https://i.pinimg.com/736x/81/09/08/8109086a16b442943a3b9c383d0a228d.jpg', description: ''},
-              { url: 'https://i.pinimg.com/1200x/62/83/71/6283719f78e7a97dbc78ded0f76aba02.jpg', description: 'Making love in Dad\'s car'},
-              { url: 'https://i.pinimg.com/736x/ce/10/c5/ce10c562ab5ebf4a8b08d89bb40a9851.jpg', description: 'My first time and it was nerve cracking. Nii-chan loved it though'},
-              { url: './Gallery/Screenshots/Camera.png', description: 'Nii-chan wanted to take videos for memories' },
-              { url: 'https://i.pinimg.com/736x/0b/51/5d/0b515d218a255171cd99c043f46db424.jpg', description: ''},
-              { url: 'https://i.pinimg.com/736x/67/1d/40/671d40ea38edc5186d72cd977f565410.jpg', description: 'Nii-chan couldn\'t help it'},
-              { url: 'https://i.pinimg.com/736x/f7/27/ad/f727adf6db9b165a0468cf0fedacbf01.jpg', description: 'Going home with you'},
-              { url: 'https://i.pinimg.com/736x/29/c3/2b/29c32b61e45037f69b5dd482f5edd032.jpg', description: 'No one was looking.'},
-            ]
-          },
-          whatIf: {
-            name: 'What if',
-            photos: [
-              { url: 'https://i.pinimg.com/736x/9e/51/b4/9e51b4db27983e5243c9218e0d6a8aaf.jpg', description: ''},
-              { url: 'https://i.pinimg.com/736x/6d/39/62/6d3962af6f9de03460af87b90492f5dc.jpg', description: 'Cold night swimming to clear my head'},
-              { url: 'https://i.pinimg.com/736x/2c/7c/e7/2c7ce757f4afebb7a56a04e8cf3f2b76.jpg', description: 'Can\'t even look at myself in the mirror because it reminds me of you'},
-              { url: 'https://i.pinimg.com/736x/5f/87/bc/5f87bcc9dc7c468b12b002ef587bec75.jpg', description: 'I guess that was too much'},
-              { url: 'https://i.pinimg.com/736x/b7/72/c8/b772c8890a77ecf60784ad29ec6a0ad7.jpg', description: ''},
-              { url: 'https://i.pinimg.com/736x/db/e0/6b/dbe06b94c7afd1c793748980d23d7842.jpg', description: 'My new comfort'},
-              { url: 'https://i.pinimg.com/736x/02/8f/e1/028fe14225a0c9dbc8bd66e669f04dee.jpg', description: 'He said I\'m lukewarm. He doesn\'t need me anymore. I\'m not even worth his time'},
-              { url: 'https://i.pinimg.com/736x/b6/d7/6e/b6d76e4f744ee706ae498c4f580fbf91.jpg', description: ''},
-              { url: 'https://i.pinimg.com/736x/2d/96/4f/2d964fe43f901c2068a9dd1d18546a21.jpg', description: 'Begged mom to buy me sleeping pills'},
-              { url: 'https://i.pinimg.com/736x/aa/bf/f6/aabff68b2bbda9c7c2229a43d82c0709.jpg', description: 'What if...'},
-              { url: 'https://i.pinimg.com/736x/df/ef/65/dfef6515525aef5d85fc0de91f6b1456.jpg', description: 'The night you left me'},
-            ]
-          }
-        };
-             
+        function loadAlbumData() {
+          if (albumData) return Promise.resolve(albumData);
+
+          return fetch('Apps/Gallery.html')
+            .then(response => {
+              if (!response.ok) throw new Error(`HTTP ${response.status}`);
+              return response.text();
+            })
+            .then(html => {
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(html, 'text/html');
+              const dataElement = doc.getElementById('gallery-album-data');
+              if (dataElement && dataElement.textContent.trim()) {
+                albumData = JSON.parse(dataElement.textContent);
+                if (!albumData) throw new Error('Parsed data is null');
+                return albumData;
+              }
+              throw new Error('Album data element not found in Gallery.html');
+            })
+            .catch(err => {
+              console.error('Failed to load album data:', err);
+              albumData = {
+                screenshots: { name: 'Screenshots', photos: [] },
+                downloaded: { name: 'Downloaded', photos: [] },
+                camera: { name: 'Camera', photos: [] },
+                favorites: { name: 'Favorites', photos: [] },
+                niiChan: { name: 'Nii-chan', photos: [] },
+                whatIf: { name: 'What if', photos: [] }
+              };
+              return albumData;
+            });
+        }
 
         function updateAlbumCounts() {
-          Object.keys(albumData).forEach(albumName => {
-            // Skip showing secret albums unless unlocked in this session
-            if (albumName === 'niiChan' && !window.niiChanUnlocked) {
-              return;
-            }
-            if (albumName === 'whatIf' && !window.whatIfUnlocked) {
-              return;
-            }
-            const count = albumData[albumName].photos.length;
-            const countEl = document.getElementById(`count-${albumName}`);
-            if (countEl) countEl.textContent = count;
+          loadAlbumData().then(data => {
+            Object.keys(data).forEach(albumName => {
+              // Skip showing secret albums unless unlocked in this session
+              if (albumName === 'niiChan' && !window.niiChanUnlocked) {
+                return;
+              }
+              if (albumName === 'whatIf' && !window.whatIfUnlocked) {
+                return;
+              }
+              const count = data[albumName].photos.length;
+              const countEl = document.getElementById(`count-${albumName}`);
+              if (countEl) countEl.textContent = count;
+            });
           });
         }
 
         function openAlbum(albumName) {
-          const album = albumData[albumName];
-          const albumsView = document.getElementById('albumsView');
-          const photosView = document.getElementById('photosView');
+          loadAlbumData().then(data => {
+            const album = data[albumName];
+            const albumsView = document.getElementById('albumsView');
+            const photosView = document.getElementById('photosView');
 
-          if (!albumsView || !photosView) return;
+            if (!albumsView || !photosView) return;
 
-          albumsView.style.display = 'none';
-          photosView.classList.add('active');
-          document.getElementById('currentAlbumTitle').textContent = album.name;
+            albumsView.style.display = 'none';
+            photosView.classList.add('active');
+            document.getElementById('currentAlbumTitle').textContent = album.name;
 
-          const photosGrid = document.getElementById('photosGrid');
-          photosGrid.innerHTML = '';
+            const photosGrid = document.getElementById('photosGrid');
+            photosGrid.innerHTML = '';
 
-          album.photos.forEach((photo, index) => {
-            const photoItem = document.createElement('div');
-            photoItem.className = 'photo-item';
-            const img = document.createElement('img');
+            album.photos.forEach((photo, index) => {
+              const photoItem = document.createElement('div');
+              photoItem.className = 'photo-item';
+              const img = document.createElement('img');
 
-            const photoUrl = typeof photo === 'string' ? photo : photo.url;
-            const description = typeof photo === 'string' ? '' : (photo.description || '');
+              const photoUrl = typeof photo === 'string' ? photo : photo.url;
+              const description = typeof photo === 'string' ? '' : (photo.description || '');
 
-            img.src = photoUrl;
-            img.alt = 'Photo';
-            img.style.cursor = 'pointer';
-            img.onclick = (e) => {
-              e.stopPropagation();
-              window.currentAlbumPhotos = album.photos;
-              window.currentPhotoIndex = index;
-              openPhotoViewer(photoUrl, description);
-            };
-            photoItem.appendChild(img);
-            photosGrid.appendChild(photoItem);
+              img.src = photoUrl;
+              img.alt = 'Photo';
+              img.style.cursor = 'pointer';
+              img.onclick = (e) => {
+                e.stopPropagation();
+                window.currentAlbumPhotos = album.photos;
+                window.currentPhotoIndex = index;
+                openPhotoViewer(photoUrl, description);
+              };
+              photoItem.appendChild(img);
+              photosGrid.appendChild(photoItem);
+            });
+
           });
         }
 
@@ -1515,28 +1572,30 @@
         }
 
         function showSecretAlbumsIfUnlocked() {
-          const niiChanAlbum = document.getElementById('niiChanAlbum');
-          const whatIfAlbum = document.getElementById('whatIfAlbum');
+          loadAlbumData().then(data => {
+            const niiChanAlbum = document.getElementById('niiChanAlbum');
+            const whatIfAlbum = document.getElementById('whatIfAlbum');
 
-          if (niiChanAlbum) {
-            if (window.niiChanUnlocked) {
-              niiChanAlbum.classList.remove('hidden');
-              const countEl = document.getElementById('count-niiChan');
-              if (countEl) countEl.textContent = albumData.niiChan.photos.length;
-            } else {
-              niiChanAlbum.classList.add('hidden');
+            if (niiChanAlbum) {
+              if (window.niiChanUnlocked) {
+                niiChanAlbum.classList.remove('hidden');
+                const countEl = document.getElementById('count-niiChan');
+                if (countEl) countEl.textContent = data.niiChan.photos.length;
+              } else {
+                niiChanAlbum.classList.add('hidden');
+              }
             }
-          }
 
-          if (whatIfAlbum) {
-            if (window.whatIfUnlocked) {
-              whatIfAlbum.classList.remove('hidden');
-              const countEl = document.getElementById('count-whatIf');
-              if (countEl) countEl.textContent = albumData.whatIf.photos.length;
-            } else {
-              whatIfAlbum.classList.add('hidden');
+            if (whatIfAlbum) {
+              if (window.whatIfUnlocked) {
+                whatIfAlbum.classList.remove('hidden');
+                const countEl = document.getElementById('count-whatIf');
+                if (countEl) countEl.textContent = data.whatIf.photos.length;
+              } else {
+                whatIfAlbum.classList.add('hidden');
+              }
             }
-          }
+          });
         }
 
         function showNiiChanAlbumIfUnlocked() {
@@ -1546,6 +1605,32 @@
         // Make functions globally accessible
         window.showSecretAlbumsIfUnlocked = showSecretAlbumsIfUnlocked;
         window.showNiiChanAlbumIfUnlocked = showNiiChanAlbumIfUnlocked;
+        window.loadSecretNotes = loadSecretNotes;
+        window.loadAlbumData = loadAlbumData;
+        window.updateAlbumCounts = updateAlbumCounts;
+        window.openAlbum = openAlbum;
+        window.closeAlbum = closeAlbum;
+        window.openPhotoViewer = openPhotoViewer;
+        window.nextPhoto = nextPhoto;
+        window.prevPhoto = prevPhoto;
+        window.flipCamera = function() {
+          cameraMode = cameraMode === 'selfie' ? 'back' : 'selfie';
+          if (cameraMode === 'selfie' && selfiePhotos.length > 0) {
+            cameraIndex = getNextShuffledPhoto();
+          } else {
+            cameraIndex = 0;
+          }
+          previousPhotoUrl = '';
+          closeCameraStream();
+          updateCameraDisplay();
+        };
+        window.capturePhoto = function() {
+          if (cameraMode === 'selfie' && selfiePhotos.length > 0) {
+            cameraIndex = getNextShuffledPhoto();
+            updateCameraDisplay();
+          }
+        };
+        window.initializeCamera = initializeCamera;
 
         function closePhotoViewer() {
           const modal = document.getElementById('photoViewerModal');
@@ -1553,6 +1638,8 @@
           window.currentAlbumPhotos = null;
           window.currentPhotoIndex = undefined;
         }
+
+        window.closePhotoViewer = closePhotoViewer;
 
         function initializeGallery() {
           updateAlbumCounts();
@@ -2262,14 +2349,26 @@
         }
 
         function setupCameraFeed() {
-          const video = document.getElementById('cameraVideo');
-          const img = document.getElementById('cameraImage');
-          const placeholder = document.getElementById('cameraPlaceholder');
-          const captureBtn = document.getElementById('cameraCapture');
-          const flipBtn = document.getElementById('cameraFlip');
+          let video = document.getElementById('cameraVideo');
+          let img = document.getElementById('cameraImage');
+          let placeholder = document.getElementById('cameraPlaceholder');
+          let captureBtn = document.getElementById('cameraCapture');
+          let flipBtn = document.getElementById('cameraFlip');
           const modeLabel = document.getElementById('cameraModeLabel');
 
           if (!captureBtn) return;
+
+          // Clone buttons to remove old event listeners
+          if (flipBtn) {
+            const newFlipBtn = flipBtn.cloneNode(true);
+            flipBtn.parentNode.replaceChild(newFlipBtn, flipBtn);
+            flipBtn = newFlipBtn;
+          }
+          if (captureBtn) {
+            const newCaptureBtn = captureBtn.cloneNode(true);
+            captureBtn.parentNode.replaceChild(newCaptureBtn, captureBtn);
+            captureBtn = newCaptureBtn;
+          }
 
           // Set initial display
           updateCameraDisplay();
@@ -2304,13 +2403,21 @@
           const placeholder = document.getElementById('cameraPlaceholder');
           const modeLabel = document.getElementById('cameraModeLabel');
           const thumbnail = document.getElementById('cameraThumbnail');
+          const display = document.getElementById('cameraDisplay');
 
           if (cameraMode === 'selfie') {
             // Selfie mode: show shuffled photos
             if (modeLabel) modeLabel.textContent = 'Selfie Mode';
+            if (display) display.textContent = '🤳';
             if (video) video.style.display = 'none';
             if (img) img.style.display = 'none';
             closeCameraStream();
+
+            // Remove notification badge in selfie mode
+            if (thumbnail) {
+              const notificationBadge = thumbnail.querySelector('.thumbnail-notification');
+              if (notificationBadge) notificationBadge.remove();
+            }
 
             if (selfiePhotos.length > 0) {
               const photoUrl = selfiePhotos[cameraIndex];
@@ -2343,9 +2450,46 @@
           } else {
             // Capture mode: real camera
             if (modeLabel) modeLabel.textContent = 'Capture Mode';
+            if (display) display.textContent = '📷';
             if (placeholder) placeholder.style.display = 'none';
             if (img) img.style.display = 'none';
             if (video) video.style.display = 'block';
+            if (thumbnail) {
+              thumbnail.style.backgroundImage = 'none';
+
+              // Add notification badge in capture mode
+              if (window.appNotifications && window.appNotifications['camera']) {
+                let notificationBadge = thumbnail.querySelector('.thumbnail-notification');
+                if (!notificationBadge) {
+                  notificationBadge = document.createElement('div');
+                  notificationBadge.className = 'thumbnail-notification';
+                  notificationBadge.style.position = 'absolute';
+                  notificationBadge.style.top = '5px';
+                  notificationBadge.style.right = '5px';
+                  notificationBadge.style.background = '#ff4444';
+                  notificationBadge.style.color = '#fff';
+                  notificationBadge.style.borderRadius = '50%';
+                  notificationBadge.style.width = '20px';
+                  notificationBadge.style.height = '20px';
+                  notificationBadge.style.display = 'flex';
+                  notificationBadge.style.alignItems = 'center';
+                  notificationBadge.style.justifyContent = 'center';
+                  notificationBadge.style.fontSize = '12px';
+                  notificationBadge.style.fontWeight = 'bold';
+                  notificationBadge.textContent = '!';
+                  thumbnail.style.position = 'relative';
+                  thumbnail.appendChild(notificationBadge);
+                  
+                  // Remove notification badge after 10 seconds
+                  setTimeout(() => {
+                    if (notificationBadge) notificationBadge.remove();
+                  }, 10000);
+                }
+              } else {
+                const notificationBadge = thumbnail.querySelector('.thumbnail-notification');
+                if (notificationBadge) notificationBadge.remove();
+              }
+            }
 
             closeCameraStream();
             navigator.mediaDevices.getUserMedia({
