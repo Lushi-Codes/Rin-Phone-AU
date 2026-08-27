@@ -693,7 +693,8 @@
                   window.niiChanUnlocked = true;
                   window.videoGalleryUnlocked = true;
                   window.unlockedCode543 = true;
-                  showNotifications(['camera', 'gallery', 'notes']);
+                  showNotifications(['gallery', 'notes', 'messages', 'phone']);
+                  window.appNotifications['camera'] = true;
                   if (window.loadSecretNotes) window.loadSecretNotes();
                   set('🩷');
                   expr = '';
@@ -1308,7 +1309,7 @@
             loadSecretNotes();
             errorEl.style.display = 'none';
           } else {
-            errorEl.textContent = 'Incorrect password';
+            errorEl.textContent = 'Where the dates meet, there lies the key';
             errorEl.style.display = 'block';
           }
         }
@@ -1836,19 +1837,20 @@
 
         // ==================== PHONE APP ====================
         const phoneContacts = [
-          { name: 'Shitty Aniki', number: '+34 698 07 41 81', avatar: 'S' },
-          { name: 'Mom', number: '+81 90-3312-0094', avatar: 'M' },
-          { name: 'Dad', number: '+81 90-3312-0095', avatar: 'D' },
-          { name: 'NPC (Isagi)', number: '+81 80-4419-2018', avatar: 'N' },
-          { name: 'Noisy Bee (Bachira)', number: '+81 80-8821-3091', avatar: 'NB' },
-          { name: 'Miss Anri Teieri', number: '+81 30-5510-9923', avatar: 'A' },
-          { name: 'Ego', number: '+81 30-0000-1101', avatar: 'E' },
-          { name: 'Pesky Cockroach (Shidou)', number: '+81 90-6669-1313', avatar: 'PC' },
-          { name: 'Reo Mikage', number: '+81 90-9999-7777', avatar: 'Re' },
-          { name: 'Seishiro Nagi', number: '+81 90-2201-0042', avatar: 'SN' },
-          { name: 'Loki', number: '+33 6 12 34 56 78', avatar: 'L' },
-          { name: 'Charles', number: '+33 6 98 76 54 32', avatar: 'C' },
-          { name: 'Dabadie', number: '+34 612 89 40 11', avatar: 'Da' }
+          { name: 'Akane Hatori', number: '+81 60-893-0568', avatar: 'AH', color: '#006c9b' },
+          { name: 'Noisy Bee (Bachira)', number: '+81 80-8821-3091', avatar: 'NB', color: '#ffd900' },
+          { name: 'Coach (Ichinan FC Youth)', number: '+81 90-1102-8841', avatar: 'C', color: '#e41818' },
+          { name: 'Dabadie', number: '+34 612 89 40 11', avatar: 'Da', color: '#5c7c11' },
+          { name: 'Dad', number: '+81 90-3312-0095', avatar: 'D', color: '#0a8789' },
+          { name: 'Ego', number: '+81 30-0000-1101', avatar: 'E', color: '#212121' },
+          { name: 'NPC (Isagi)', number: '+81 80-4419-2018', avatar: 'N', color: '#009a21' },
+          { name: 'Miss Anri Teieri', number: '+81 30-5510-9923', avatar: 'A', color: '#ff6ccc' },
+          { name: 'Mom', number: '+81 90-3312-0094', avatar: 'M', color: '#4cac98' },
+          { name: 'Nanase', number: '+81 12-30-06363', avatar: 'Na', color: '#9370db' },
+          { name: 'Seishiro Nagi', number: '+81 90-2201-0042', avatar: 'SN', color: '#bcbcbc' },
+          { name: 'Pesky Cockroach (Shidou)', number: '+81 90-6669-1313', avatar: 'PC', color: '#ff009d' },
+          { name: 'Reo Mikage', number: '+81 90-9999-7777', avatar: 'Re', color: '#a300bc' },
+          { name: 'Shitty Aniki', number: '+34 698 07 41 81', avatar: 'S', color: '#834655' }
         ];
 
         function initializePhoneContacts() {
@@ -1861,7 +1863,7 @@
             contactEl.className = 'contact-row';
             contactEl.style.cssText = 'padding: 12px; border-bottom: 1px solid #333; cursor: pointer; display: flex; align-items: center; gap: 12px;';
             contactEl.innerHTML = `
-              <div style="width: 40px; height: 40px; border-radius: 50%; background: #00a896; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; flex-shrink: 0;">${contact.avatar}</div>
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: ${contact.color}; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; flex-shrink: 0;">${contact.avatar}</div>
               <div style="flex: 1;">
                 <div style="font-weight: 600; color: #fff;">${contact.name}</div>
                 <div style="font-size: 12px; color: #aaa;">${contact.number}</div>
@@ -1894,7 +1896,7 @@
               callCount: parseInt(el.dataset.count, 10) || 1,
               audio: el.dataset.audio || '',
               fullDate,
-              date: fullDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+              date: fullDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
             };
           });
         }
