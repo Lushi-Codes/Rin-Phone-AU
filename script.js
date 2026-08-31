@@ -1203,8 +1203,8 @@
           const promises = mappings.map(map => loadFragmentTo(map.selector, map.file));
           return Promise.all(promises).then(() => {
             console.log('All fragments loaded');
-            setupMessagesList();
             loadMessageThreadsFromFragment();
+            setupMessagesList();
             setupMessagesConversationControls();
             setupThreadInput();
             initializeLockedNotes();
@@ -1677,31 +1677,65 @@
 
 
         // Message Threading System
-        // Thread content (names, icons, messages) lives in Apps/Messages.html as
-        // hidden .thread-data blocks — parsed into this object once the fragment loads.
+        // Conversation content (names, icons, snippets, messages) lives in
+        // Apps/Messages.html as a JSON <script id="message-data"> block —
+        // parsed into this object and rendered once the fragment loads.
         let messageThreads = {};
 
         function loadMessageThreadsFromFragment() {
           const container = document.querySelector('#app-messages .message-list');
           if (!container) return;
 
+          const scriptEl = container.querySelector('script[type="application/json"]#message-data');
+          if (!scriptEl) return;
+
+          let data;
+          try {
+            data = JSON.parse(scriptEl.textContent);
+          } catch (err) {
+            console.error('Error loading messages:', err);
+            return;
+          }
+
           messageThreads = {};
-          const threadEls = Array.from(container.querySelectorAll('.thread-data'));
-          threadEls.forEach(el => {
-            const id = el.dataset.id;
+          const threadView = container.querySelector('#conversationThread');
+          container.querySelectorAll('.message-item').forEach(el => el.remove());
+
+          (data.conversations || []).forEach(conv => {
+            const id = conv.id;
             if (!id) return;
-            const name = el.dataset.name || id;
-            const icon = el.dataset.icon || '?';
-            const messages = Array.from(el.querySelectorAll('.thread-msg')).map(m => {
-              const msg = {
-                sender: m.dataset.sender || 'them',
-                text: m.textContent.trim(),
-                time: m.dataset.time || ''
-              };
-              if (m.dataset.date) msg.date = m.dataset.date;
-              return msg;
-            });
-            messageThreads[id] = { name, icon, messages };
+            const name = conv.name || id;
+            const icon = conv.icon || '?';
+
+            messageThreads[id] = {
+              name,
+              icon,
+              messages: (conv.messages || []).map(m => {
+                const msg = {
+                  sender: m.sender || 'them',
+                  text: m.text || '',
+                  time: m.time || ''
+                };
+                if (m.date) msg.date = m.date;
+                return msg;
+              })
+            };
+
+            const item = document.createElement('div');
+            item.className = 'message-item';
+            item.dataset.id = id;
+            const avatarStyle = conv.avatarImage ? ` style="background-image: url('${conv.avatarImage}')"` : '';
+            const unreadHtml = conv.unread ? `<div class="unread-badge">${conv.unread}</div>` : '';
+            item.innerHTML = `
+              <div class="avatar"${avatarStyle}>${escapeHtml(icon)}</div>
+              <div class="message-main">
+                <div class="message-name">${escapeHtml(name)}</div>
+                <div class="message-snippet">${escapeHtml(conv.snippet || '')}</div>
+              </div>
+              <div class="message-meta"><div class="message-date">${escapeHtml(conv.date || '')}</div>${unreadHtml}</div>
+            `;
+            if (threadView) container.insertBefore(item, threadView);
+            else container.appendChild(item);
           });
         }
 
@@ -1885,20 +1919,27 @@
         let phoneRecents = [];
 
         function loadPhoneRecentsFromFragment() {
-          const container = document.querySelector('#phoneRecents .recents-list');
-          if (!container) return;
-          phoneRecents = Array.from(container.querySelectorAll('.recent-call')).map(el => {
-            const fullDate = new Date(el.dataset.datetime);
-            return {
-              name: el.dataset.name || '',
-              number: el.dataset.number || '',
-              type: el.dataset.type || 'incoming',
-              callCount: parseInt(el.dataset.count, 10) || 1,
-              audio: el.dataset.audio || '',
-              fullDate,
-              date: fullDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-            };
-          });
+          const scriptEl = document.querySelector('#phoneRecents .recents-list script[type="application/json"]#call-data');
+          if (!scriptEl) return;
+
+          try {
+            const data = JSON.parse(scriptEl.textContent);
+            phoneRecents = data.calls.map((call, index) => {
+              const fullDate = new Date(call.datetime);
+              return {
+                name: call.name || '',
+                number: call.number || '',
+                type: call.type || 'incoming',
+                callCount: call.count || 1,
+                audio: call.audio || '',
+                fullDate,
+                date: fullDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                index
+              };
+            });
+          } catch (err) {
+            console.error('Error loading calls:', err);
+          }
         }
 
         window.playCallRecording = function(index) {
@@ -1926,17 +1967,27 @@
 
           let html = '<div style="padding: 12px; color: #fff;">';
 
+          // Sort dates by actual date value (oldest first)
+          const sortedDateKeys = Object.keys(grouped).sort((a, b) => {
+            const dateA = new Date(grouped[a][0].fullDate);
+            const dateB = new Date(grouped[b][0].fullDate);
+            return dateA - dateB; // Ascending order (oldest first)
+          });
+
           // Render grouped by date (newest first)
-          Object.keys(grouped).reverse().forEach(dateKey => {
+          sortedDateKeys.forEach(dateKey => {
             html += `<div style="color: #aaa; font-size: 12px; padding: 12px 0 8px 0; margin-top: 8px;">${dateKey}</div>`;
 
             grouped[dateKey].forEach(call => {
               const typeIcon = call.type === 'missed' ? '↙️' : call.type === 'outgoing' ? '↗️' : '↙️';
               const timeFormatted = call.fullDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
               const callCountText = call.callCount > 1 ? ` (${call.callCount})` : '';
+              const isClickable = call.type === 'missed';
+              const onclickAttr = isClickable ? `onclick="playCallRecording(${call.index})"` : '';
+              const cursorStyle = isClickable ? 'cursor: pointer;' : 'cursor: default; opacity: 0.7;';
 
               html += `
-                <div onclick="playCallRecording(${call.index})" style="padding: 12px; background: #1a1a1a; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                <div ${onclickAttr} style="padding: 12px; background: #1a1a1a; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; ${cursorStyle}">
                   <div style="font-size: 18px;">${typeIcon}</div>
                   <div style="flex: 1;">
                     <div style="color: #fff; font-weight: 600;">${call.name}${callCountText}</div>

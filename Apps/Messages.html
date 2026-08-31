@@ -1,296 +1,316 @@
-<div class="message-item" data-id="shitty-aniki">
-  <div class="avatar" style="background-image: url('')">SN</div>
-  <div class="message-main">
-    <div class="message-name">Shitty Aniki</div>
-    <div class="message-snippet">You: I hate you!</div>
-  </div>
-  <div class="message-meta"><div class="message-date">Fri</div></div>
-</div>
-
-<div class="message-item" data-id="mom">
-  <div class="avatar">M</div>
-  <div class="message-main">
-    <div class="message-name">Mom</div>
-    <div class="message-snippet">Get home safe, darling!</div>
-  </div>
-  <div class="message-meta"><div class="message-date">Fri</div></div>
-</div>
-
-<div class="message-item" data-id="dad">
-  <div class="avatar">D</div>
-  <div class="message-main">
-    <div class="message-name">Dad</div>
-    <div class="message-snippet">See you in a few weeks, Rin</div>
-  </div>
-  <div class="message-meta"><div class="message-date">Wed</div></div>
-</div>
-
-<div class="message-item" data-id="isagi-yoichi">
-  <div class="avatar">IY</div>
-  <div class="message-main">
-    <div class="message-name">Isagi Yoichi</div>
-    <div class="message-snippet">You: Shut up</div>
-  </div>
-  <div class="message-meta"><div class="message-date">Mon</div></div>
-</div>
-
-<div class="message-item" data-id="shidou-ryusei">
-  <div class="avatar">SR</div>
-  <div class="message-main">
-    <div class="message-name">Shidou Ryusei</div>
-    <div class="message-snippet">You: I'm not interested</div>
-  </div>
-  <div class="message-meta"><div class="message-date">Mon</div><div class="unread-badge">2</div></div>
-</div>
-
-<div class="message-item" data-id="miss-anri-teieri">
-  <div class="avatar">MAT</div>
-  <div class="message-main">
-    <div class="message-name">Miss Anri Teieri</div>
-    <div class="message-snippet">Please get here before 5 PM. Thank you!</div>
-  </div>
-  <div class="message-meta"><div class="message-date">Mon</div></div>
-</div>
-
-<div class="message-item" data-id="empty-1">
-  <div class="avatar">?</div>
-  <div class="message-main">
-    <div class="message-name">Empty 1</div>
-    <div class="message-snippet"></div>
-  </div>
-  <div class="message-meta"><div class="message-date"></div></div>
-</div>
-
-<div class="message-item" data-id="empty-2">
-  <div class="avatar">?</div>
-  <div class="message-main">
-    <div class="message-name">Empty 2</div>
-    <div class="message-snippet"></div>
-  </div>
-  <div class="message-meta"><div class="message-date"></div></div>
-</div>
-
-<div class="message-item" data-id="empty-3">
-  <div class="avatar">?</div>
-  <div class="message-main">
-    <div class="message-name">Empty 3</div>
-    <div class="message-snippet"></div>
-  </div>
-  <div class="message-meta"><div class="message-date"></div></div>
-</div>
-
 <!-- ==================================================================
-     Thread message data — add new conversations here.
-     Each .thread-data data-id MUST match a .message-item data-id above.
-     Each .thread-msg data-sender is "them" or "you"; data-date is optional
-     and only needs to be set on the first message of a new day.
+     Message data stored as JSON for script.js to load.
+     Each conversation:
+       id       - unique slug (used to open the thread)
+       name     - contact name shown in list + thread header
+       icon     - avatar initials
+       avatarImage - optional image URL for the avatar (leave "" for none)
+       snippet  - preview text shown in the message list
+       date     - short date label shown in the list (e.g. "Fri")
+       unread   - unread badge count (0 = no badge)
+       messages - array of {sender, time, text} where sender is "them" or "you";
+                  "date" is optional and only needed on the first message of a new day.
      ================================================================== -->
-<div class="thread-data" data-id="shitty-aniki" data-name="Shitty Aniki" data-icon="SN">
-  <div class="thread-msg" data-sender="them" data-time="10:30 AM">Hey, how's it going?</div>
-  <div class="thread-msg" data-sender="you" data-time="10:32 AM">I hate you!</div>
-  <div class="thread-msg" data-sender="them" data-time="10:35 AM">What?? Why?</div>
-</div>
+<script type="application/json" id="message-data">
+  {
+    "conversations": [
+      {
+        "id": "shitty-aniki",
+        "name": "Shitty Aniki",
+        "icon": "SN",
+        "avatarImage": "",
+        "snippet": "You: I hate you!",
+        "date": "Fri",
+        "unread": 0,
+        "messages": [
+          { "sender": "them", "time": "10:30 AM", "text": "Hey, how's it going?" },
+          { "sender": "you", "time": "10:32 AM", "text": "I hate you!" },
+          { "sender": "them", "time": "10:35 AM", "text": "What?? Why?" }
+        ]
+      },
 
-<div class="thread-data" data-id="mom" data-name="Mom" data-icon="M">
-  <div class="thread-msg" data-sender="them" data-time="5:45 PM" data-date="April 11, 2021">Get home safe, darling!</div>
-  <div class="thread-msg" data-sender="you" data-time="5:46 PM">I will, see you soon!</div>
-  <div class="thread-msg" data-sender="them" data-time="10:30 AM" data-date="April 12, 2021">How are you doing?</div>
-  <div class="thread-msg" data-sender="you" data-time="10:31 AM">I'm good! How about you?</div>
-</div>
+      {
+        "id": "mom",
+        "name": "Mom",
+        "icon": "M",
+        "avatarImage": "",
+        "snippet": "Get home safe, darling!",
+        "date": "Fri",
+        "unread": 0,
+        "messages": [
+          { "sender": "them", "time": "5:45 PM", "date": "April 11, 2021", "text": "Get home safe, darling!" },
+          { "sender": "you", "time": "5:46 PM", "text": "I will, see you soon!" },
+          { "sender": "them", "time": "10:30 AM", "date": "April 12, 2021", "text": "How are you doing?" },
+          { "sender": "you", "time": "10:31 AM", "text": "I'm good! How about you?" }
+        ]
+      },
 
-<div class="thread-data" data-id="dad" data-name="Dad" data-icon="D">
-  <div class="thread-msg" data-sender="them" data-time="2:15 PM">See you in a few weeks, Rin</div>
-  <div class="thread-msg" data-sender="you" data-time="2:16 PM">Safe travels!</div>
-</div>
+      {
+        "id": "dad",
+        "name": "Dad",
+        "icon": "D",
+        "avatarImage": "",
+        "snippet": "See you in a few weeks, Rin",
+        "date": "Wed",
+        "unread": 0,
+        "messages": [
+          { "sender": "them", "time": "2:15 PM", "text": "See you in a few weeks, Rin" },
+          { "sender": "you", "time": "2:16 PM", "text": "Safe travels!" }
+        ]
+      },
 
-<div class="thread-data" data-id="isagi-yoichi" data-name="Isagi Yoichi" data-icon="IY">
-  <div class="thread-msg" data-sender="them" data-time="7:20 PM">Want to train together?</div>
-  <div class="thread-msg" data-sender="you" data-time="7:21 PM">Shut up</div>
-</div>
+      {
+        "id": "isagi-yoichi",
+        "name": "Isagi Yoichi",
+        "icon": "IY",
+        "avatarImage": "",
+        "snippet": "You: Shut up",
+        "date": "Mon",
+        "unread": 0,
+        "messages": [
+          { "sender": "them", "time": "7:20 PM", "text": "Want to train together?" },
+          { "sender": "you", "time": "7:21 PM", "text": "Shut up" }
+        ]
+      },
 
-<div class="thread-data" data-id="shidou-ryusei" data-name="Shidou Ryusei" data-icon="SR">
-  <div class="thread-msg" data-sender="them" data-time="6:00 PM">Let's play a match</div>
-  <div class="thread-msg" data-sender="you" data-time="6:01 PM">I'm not interested</div>
-</div>
+      {
+        "id": "shidou-ryusei",
+        "name": "Shidou Ryusei",
+        "icon": "SR",
+        "avatarImage": "",
+        "snippet": "You: I'm not interested",
+        "date": "Mon",
+        "unread": 2,
+        "messages": [
+          { "sender": "them", "time": "6:00 PM", "text": "Let's play a match" },
+          { "sender": "you", "time": "6:01 PM", "text": "I'm not interested" }
+        ]
+      },
 
-<div class="thread-data" data-id="miss-anri-teieri" data-name="Miss Anri Teieri" data-icon="MAT">
-  <div class="thread-msg" data-sender="them" data-time="4:30 PM">Please get here before 5 PM. Thank you!</div>
-</div>
+      {
+        "id": "miss-anri-teieri",
+        "name": "Miss Anri Teieri",
+        "icon": "MAT",
+        "avatarImage": "",
+        "snippet": "Please get here before 5 PM. Thank you!",
+        "date": "Mon",
+        "unread": 0,
+        "messages": [{ "sender": "them", "time": "4:30 PM", "text": "Please get here before 5 PM. Thank you!" }]
+      },
 
-<div class="thread-data" data-id="empty-1" data-name="Empty 1" data-icon="?"></div>
-<div class="thread-data" data-id="empty-2" data-name="Empty 2" data-icon="?"></div>
+      {
+        "id": "empty-1",
+        "name": "Empty 1",
+        "icon": "?",
+        "avatarImage": "",
+        "snippet": "",
+        "date": "",
+        "unread": 0,
+        "messages": []
+      },
+
+      {
+        "id": "empty-2",
+        "name": "Empty 2",
+        "icon": "?",
+        "avatarImage": "",
+        "snippet": "",
+        "date": "",
+        "unread": 0,
+        "messages": []
+      },
+
+      {
+        "id": "empty-3",
+        "name": "Empty 3",
+        "icon": "?",
+        "avatarImage": "",
+        "snippet": "",
+        "date": "",
+        "unread": 0,
+        "messages": []
+      }
+    ]
+  }
+</script>
 
 <!-- Message Thread View -->
-<div class="conversation-thread" id="conversationThread" style="display: none;">
+<div class="conversation-thread" id="conversationThread" style="display: none">
   <div class="thread-header">
     <button class="thread-back" onclick="closeThreadView()">‹</button>
     <div class="thread-title" id="threadTitle">Contact Name</div>
     <div class="thread-menu">⋮</div>
   </div>
-  
+
   <div class="messages-container" id="messagesContainer"></div>
-  
+
   <div class="message-input-area">
     <input type="text" class="message-input" id="messageInput" placeholder="iMessage" />
-    <button class="input-button" onclick="(function(){sendThreadMessage(window.currentThreadId, document.getElementById('messageInput').value); document.getElementById('messageInput').value = '';})()">➤</button>
+    <button
+      class="input-button"
+      onclick="
+        (function () {
+          sendThreadMessage(window.currentThreadId, document.getElementById('messageInput').value);
+          document.getElementById('messageInput').value = '';
+        })()
+      "
+    >
+      ➤
+    </button>
   </div>
 </div>
 
 <style>
-.thread-data {
-  display: none;
-}
+  .conversation-thread {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #0b0f12;
+  }
 
-.conversation-thread {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: #0b0f12;
-}
+  .thread-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #333;
+    background: #0b0f12;
+  }
 
-.thread-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid #333;
-  background: #0b0f12;
-}
+  .thread-back {
+    background: none;
+    border: none;
+    color: #00a896;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+  }
 
-.thread-back {
-  background: none;
-  border: none;
-  color: #00a896;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 0;
-}
+  .thread-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+  }
 
-.thread-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #fff;
-}
+  .thread-menu {
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+  }
 
-.thread-menu {
-  color: #fff;
-  font-size: 20px;
-  cursor: pointer;
-}
+  .messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 
-.messages-container {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+  .message-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
 
-.message-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 8px;
-}
+  .message-timestamp {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    margin: 12px 0;
+  }
 
-.message-timestamp {
-  text-align: center;
-  color: #999;
-  font-size: 12px;
-  margin: 12px 0;
-}
+  .message {
+    display: flex;
+    flex-direction: column;
+    margin: 4px 0;
+  }
 
-.message {
-  display: flex;
-  flex-direction: column;
-  margin: 4px 0;
-}
+  .message.sent {
+    align-items: flex-end;
+  }
 
-.message.sent {
-  align-items: flex-end;
-}
+  .message.received {
+    align-items: flex-start;
+  }
 
-.message.received {
-  align-items: flex-start;
-}
+  .message-bubble {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 20px;
+    word-wrap: break-word;
+    font-size: 14px;
+    line-height: 1.4;
+  }
 
-.message-bubble {
-  max-width: 70%;
-  padding: 10px 14px;
-  border-radius: 20px;
-  word-wrap: break-word;
-  font-size: 14px;
-  line-height: 1.4;
-}
+  .message-time {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+    margin-left: 4px;
+    margin-right: 4px;
+  }
 
-.message-time {
-  font-size: 12px;
-  color: #888;
-  margin-top: 4px;
-  margin-left: 4px;
-  margin-right: 4px;
-}
+  .message.sent .message-time {
+    align-self: flex-end;
+  }
 
-.message.sent .message-time {
-  align-self: flex-end;
-}
+  .message.received .message-time {
+    align-self: flex-start;
+  }
 
-.message.received .message-time {
-  align-self: flex-start;
-}
+  .message.sent .message-bubble {
+    background: #00a896;
+    color: #1b1b1b;
+    border-bottom-right-radius: 4px;
+  }
 
-.message.sent .message-bubble {
-  background: #00a896;
-  color: #fff;
-  border-bottom-right-radius: 4px;
-}
+  .message.received .message-bubble {
+    background: #2a2a2a;
+    color: #e0e0e0;
+    border-bottom-left-radius: 4px;
+  }
 
-.message.received .message-bubble {
-  background: #2a2a2a;
-  color: #e0e0e0;
-  border-bottom-left-radius: 4px;
-}
+  .message-input-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #0b0f12;
+    border-top: 1px solid #333;
+  }
 
-.message-input-area {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: #0b0f12;
-  border-top: 1px solid #333;
-}
+  .input-button {
+    background: #2a2a2a;
+    border: none;
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-.input-button {
-  background: #2a2a2a;
-  border: none;
-  color: #fff;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .message-input {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 20px;
+    color: #fff;
+    padding: 10px 16px;
+    font-size: 14px;
+    outline: none;
+  }
 
-.message-input {
-  flex: 1;
-  background: #1a1a1a;
-  border: 1px solid #444;
-  border-radius: 20px;
-  color: #fff;
-  padding: 10px 16px;
-  font-size: 14px;
-  outline: none;
-}
+  .message-input::placeholder {
+    color: #666;
+  }
 
-.message-input::placeholder {
-  color: #666;
-}
-
-.message-input:focus {
-  border-color: #00a896;
-}
+  .message-input:focus {
+    border-color: #00a896;
+  }
 </style>
