@@ -1,24 +1,4 @@
-<!-- ==================================================================
-     Message data stored as JSON for script.js to load.
-     Each conversation:
-       id       - unique slug (used to open the thread)
-       name     - contact name shown in list + thread header
-       icon     - avatar initials
-       avatarImage - optional image URL for the avatar (leave "" for none)
-       snippet  - preview text shown in the message list
-       date     - short date label shown in the list (e.g. "Fri")
-       unread   - unread badge count (0 = no badge)
-       messages - array of {sender, time, text} where sender is "them" or "you";
-                  "date" is optional and only needed on the first message of a new day.
-     NOTE: JSON does not allow comments — keep notes like the TODO below up here.
-     TODO (shitty-aniki thread): Add more romance in 2012 to 2014. No replies from
-     Sae starting July 1, 2014. One thank you message from Sae in his birthday.
-     One reply "Why are you wasting your time on such lukewarm things?" after his
-     'date' with Aoi. More angst after that. Last message from Sae.
-     TODO (mom thread): Congratulations on winning the tournament (HS), reminder
-     when greeting/socializing after he took off going to bllk, Asking him how he
-     is doing, Asking him how was the meet up with Sae in U20 match.
-     ================================================================== -->
+
 <script type="application/json" id="message-data">
   {
     "conversations": [
@@ -28,8 +8,8 @@
         "icon": "S",
         "avatarImage": "",
         "snippet": "You: I hate you!",
-        "date": "Fri",
-        "unread": 0,
+        "date": "Yesterday",
+        "unread": 1,
         "messages": [
           { "sender": "you", "time": "05:01 PM", "date": "September 11, 2010", "text": "Nii-chan, where are you?" },
           { "sender": "them", "time": "05:01 PM", "text": "Wait there for me. I'll come get you." },
@@ -47,6 +27,13 @@
           { "sender": "you", "time": "02:12 PM", "text": "It says 'Bakery'. There's a big pink bear outside." },
           { "sender": "them", "time": "02:13 PM", "text": "Stay right next to the bear. Don't move an inch." },
           { "sender": "you", "time": "02:14 PM", "text": "Okay... hurry, Nii-chan, the bear looks kind of creepy." },
+
+          { "sender": "you", "time": "04:50 PM", "date": "February 14, 2011", "text": "Nii-chan, why did that girl cry after talking to you?" },
+          { "sender": "them", "time": "04:52 PM", "text": "I turned down her chocolates." },
+          { "sender": "you", "time": "04:53 PM", "text": "Oh. Good." },
+          { "sender": "them", "time": "04:55 PM", "text": "Good?" },
+          { "sender": "you", "time": "04:56 PM", "text": "I MEAN we already have too many chocolates in my bag!! Walk home together?" },
+          { "sender": "them", "time": "04:57 PM", "text": "Meet me at the gate. I got you something better than that cheap stuff." },
 
           { "sender": "you", "time": "07:15 PM", "date": "March 15, 2011", "text": "Nii-chan, are you watching the game on channel 4?" },
           { "sender": "them", "time": "07:16 PM", "text": "Yeah. That striker is completely useless." },
@@ -102,15 +89,20 @@
           { "sender": "you", "time": "04:16 PM", "text": "No way! I just want to celebrate your recovery." },
           { "sender": "them", "time": "04:16 PM", "text": "Right... Hurry up then." },
 
+          { "sender": "you", "time": "07:00 AM", "date": "October 10, 2012", "text": "HAPPY BIRTHDAY NII-CHAN!!! I set an alarm so I'd be the first one to greet you!" },
+          { "sender": "them", "time": "07:45 AM", "text": "You texted me at 7 AM for this?" },
+          { "sender": "you", "time": "07:46 AM", "text": "Was I first?!" },
+          { "sender": "them", "time": "07:50 AM", "text": "...Yeah. You were first." },
+          { "sender": "you", "time": "07:51 AM", "text": "VICTORY! Come home from camp fast, your gift is waiting! It's popsicle flavored!" },
+          { "sender": "them", "time": "07:52 AM", "text": "It's just popsicles, isn't it." },
+          { "sender": "you", "time": "07:53 AM", "text": "It's SPECIAL popsicles!" },
+
           { "sender": "you", "time": "06:30 PM", "date": "October 31, 2012", "text": "Nii-chan! Look how much candy I got from the neighborhood!" },
           { "sender": "them", "time": "06:32 PM", "text": "Why didn't you wait for me?" },
           { "sender": "you", "time": "06:33 PM", "text": "I thought you didn't want to." },
           { "sender": "them", "time": "06:35 PM", "text": "Well yeah, but I need to make sure you're safe." },
           { "sender": "you", "time": "06:36 PM", "text": "It's okay. I'm coming home anyway. It's boring without Nii-chan." },
           { "sender": "them", "time": "06:36 PM", "text": "I'll wait for you outside. Don't go anywhere else." },
-
-
-          
 
           { "sender": "them", "time": "10:15 AM", "date": "February 04, 2013", "text": "Did Mom give you your medicine before she left for work?" },
           { "sender": "you", "time": "10:18 AM", "text": "Yeah. But my throat still hurts and I'm bored." },
@@ -121,23 +113,149 @@
 
           { "sender": "you", "time": "11:32 AM", "date": "May 19, 2013", "text": "Pssst. Nii-chan!" },
           { "sender": "you", "time": "11:35 AM", "text": "Nii-chaaaaaaaaaaaannnnnnnnnnnnn" },
+          { "sender": "you", "time": "11:35 AM", "text": "Nii-chaaaaaaaaaaaannnnnnnnnnnnn" },
+          { "sender": "you", "time": "11:35 AM", "text": "Nii-chaaaaaaaaaaaannnnnnnnnnnnn" },
+          { "sender": "you", "time": "11:35 AM", "text": "Nii-chaaaaaaaaaaaannnnnnnnnnnnn" },
+          { "sender": "you", "time": "11:35 AM", "text": "Nii-chaaaaaaaaaaaannnnnnnnnnnnn" },
           { "sender": "you", "time": "11:42 AM", "text": "Nii-cccchhhhhhhaaaaaaannnnnnn. Why are you ignorning me :c" },
           { "sender": "them", "time": "11:45 AM", "text": "It's class time, Rin. We'll have lunch in 15 minutes." },
           { "sender": "you", "time": "11:46 AM", "text": "Are you mad at me?" },
           { "sender": "them", "time": "11:50 AM", "text": "No. Where'd you get that idea? I'll see you in 10 minutes. Focus on your class, alright?" },
           { "sender": "you", "time": "11:50 AM", "text": "Yes, Nii-chan! c:" },
 
+          { "sender": "them", "time": "05:01 PM", "date": "May 21, 2013", "text": "Where are you?" },
+          { "sender": "them", "time": "05:03 PM", "text": "Rin? We're gonna be late for the practice." },
+          { "sender": "them", "time": "05:03 PM", "text": "Did you fall asleep again?" },
+          { "sender": "them", "time": "05:06 PM", "text": "I'm on my way to your room." },
+          { "sender": "them", "time": "09:41 PM", "text": "Was she the reason you were late?" },
+          { "sender": "you", "time": "09:43 PM", "text": "Akane? She just wanted to tell me something..." },
+          { "sender": "them", "time": "09:44 PM", "text": "Next time don't stand there listening. You have somewhere to be." },
+          { "sender": "you", "time": "09:45 PM", "text": "Are you mad, Nii-chan?" },
+          { "sender": "them", "time": "09:47 PM", "text": "Not at you. Go to sleep." },
 
+          { "sender": "you", "time": "09:12 PM", "date": "June 5, 2013", "text": "Nii-chan. I can't stop thinking about camp." },
+          { "sender": "them", "time": "09:15 PM", "text": "Neither can I. Now sleep. You have drills at 7." },
+          { "sender": "you", "time": "09:16 PM", "text": "Okay. But I'm not taking back what I did." },
+          { "sender": "them", "time": "09:18 PM", "text": "...I know. Me neither." },
+
+          { "sender": "you", "time": "03:30 PM", "date": "July 15, 2013", "text": "The ice cream lady called us 'such good brothers' again today." },
+          { "sender": "them", "time": "03:34 PM", "text": "I heard her." },
+          { "sender": "you", "time": "03:35 PM", "text": "You made a weird face when she said it." },
+          { "sender": "them", "time": "03:38 PM", "text": "Eat your popsicle before it melts, Rin." },
+
+          { "sender": "them", "time": "05:20 PM", "date": "August 20, 2013", "text": "Come to the riverbank. The sunset looks good today." },
+          { "sender": "you", "time": "05:21 PM", "text": "Just the sunset?" },
+          { "sender": "them", "time": "05:22 PM", "text": "And I bought two popsicles. They're melting." },
+          { "sender": "you", "time": "05:22 PM", "text": "RUNNING!" },
+
+          { "sender": "you", "time": "10:20 PM", "date": "September 9, 2013", "text": "Best birthday ever. The plushie is guarding my pillow now." },
+          { "sender": "them", "time": "10:22 PM", "text": "It better. That machine robbed me of 2000 yen." },
+          { "sender": "you", "time": "10:23 PM", "text": "Worth it! Good night, Nii-chan. Thank you for today c:" },
+          { "sender": "them", "time": "10:25 PM", "text": "Happy birthday, Rin. Now sleep." },
+
+          { "sender": "you", "time": "08:05 PM", "date": "October 10, 2013", "text": "You didn't have to eat the whole pancake, you know." },
+          { "sender": "them", "time": "08:07 PM", "text": "It was good." },
+          { "sender": "you", "time": "08:08 PM", "text": "It was CHARCOAL, Nii-chan. On both sides." },
+          { "sender": "them", "time": "08:10 PM", "text": "It was your charcoal. Make it again next year. With less fire." },
+
+          { "sender": "you", "time": "07:34 PM", "date": "November 3, 2013", "text": "Nii-chan, your gray hoodie is missing from the laundry. Just saying. No reason." },
+          { "sender": "them", "time": "07:40 PM", "text": "Rin." },
+          { "sender": "you", "time": "07:41 PM", "text": "It's MY hoodie now. Finders keepers." },
+          { "sender": "them", "time": "07:43 PM", "text": "Keep it. It looks better on you anyway." },
+          { "sender": "you", "time": "07:43 PM", "text": "!!!!! You can't just SAY things like that" },
+
+          { "sender": "you", "time": "05:48 AM", "date": "January 1, 2014", "text": "Everyone's still asleep. Watch the first sunrise with me?" },
+          { "sender": "them", "time": "05:50 AM", "text": "Get the blanket. The big one." },
+          { "sender": "you", "time": "05:51 AM", "text": "Already at the porch c:" },
+          { "sender": "them", "time": "05:52 AM", "text": "Warm up my side. I'm coming down." },
+
+          { "sender": "you", "time": "04:02 PM", "date": "February 18, 2014", "text": "MOM TOLD ME. RE AL?! NII-CHAN, RE AL MADRID?!" },
+          { "sender": "them", "time": "04:05 PM", "text": "Calm down." },
+          { "sender": "you", "time": "04:05 PM", "text": "I'm going to brag about you to the entire school. The entire COUNTRY." },
+          { "sender": "them", "time": "04:08 PM", "text": "Don't. Just keep watching me. Yours are the only eyes I care about." },
+          { "sender": "you", "time": "04:09 PM", "text": "...That's not fair, Nii-chan. You can't make me cry at the bus stop." },
+
+          { "sender": "them", "time": "10:20 PM", "date": "April 6, 2014", "text": "You've been quiet all evening. Stop hogging the blanket and say it." },
+          { "sender": "you", "time": "10:24 PM", "text": "I don't want you to go. I know it's our dream. I know. But the room is going to be so empty." },
+          { "sender": "them", "time": "10:26 PM", "text": "It's not goodbye, it's a head start. Catch up to me, and I'll be waiting at the top. That's a promise." },
+          { "sender": "you", "time": "10:27 PM", "text": "Pinky promise?" },
+          { "sender": "them", "time": "10:29 PM", "text": "Don't make it childish." },
+          { "sender": "them", "time": "10:30 PM", "text": "...Fine. Pinky promise. Come here." },
+
+          { "sender": "them", "time": "01:05 PM", "date": "April 11, 2014", "text": "Boarding now." },
+          { "sender": "you", "time": "01:06 PM", "text": "Text me when you land! Don't forget me the second you see Madrid!" },
+          { "sender": "them", "time": "01:08 PM", "text": "Impossible. Check your desk drawer when you get home. Don't cry." },
+          { "sender": "you", "time": "01:09 PM", "text": "I'm not crying. YOU'RE crying." },
+          { "sender": "them", "time": "01:12 PM", "text": "See you at the top, Rin." },
+          { "sender": "you", "time": "01:13 PM", "text": "Watch me, Nii-chan. I'll catch up before you even miss me!" },
+
+          { "sender": "them", "time": "06:10 AM", "date": "April 12, 2014", "text": "Landed. The airport here is huge." },
+          { "sender": "you", "time": "06:11 AM", "text": "NII-CHAN! How was the flight? Did you sleep? What does Madrid look like?" },
+          { "sender": "them", "time": "06:14 AM", "text": "Big. Loud. The dorm is fine. Training starts Monday." },
+          { "sender": "you", "time": "06:15 AM", "text": "I found it. Your captain armband, in my drawer." },
+          { "sender": "them", "time": "06:18 AM", "text": "Keep it safe until you earn your own." },
+          { "sender": "you", "time": "06:19 AM", "text": "I'm never giving it back. Good luck on Monday. Miss you already." },
+
+          { "sender": "you", "time": "05:30 PM", "date": "April 19, 2014", "text": "First week report! Coach doubled my drills. My legs gave up on the way home and I sat on the guardrail for 10 minutes." },
+          { "sender": "them", "time": "11:42 PM", "text": "Your form breaks when you're tired. Fix that before you add more reps." },
+          { "sender": "you", "time": "11:43 PM", "text": "How do you know my form breaks?! You're not even here!" },
+          { "sender": "them", "time": "11:45 PM", "text": "I've watched you kick a ball for eleven years, Rin. I know." },
+
+          { "sender": "them", "time": "07:03 AM", "date": "April 26, 2014", "text": "Stop texting me at 3 AM my time. The time difference is 7 hours." },
+          { "sender": "you", "time": "07:05 AM", "text": "Sorry!! I keep forgetting the math! But you replied anyway c:" },
+          { "sender": "them", "time": "07:08 AM", "text": "Unfortunately." },
+
+          { "sender": "you", "time": "06:40 PM", "date": "May 10, 2014", "text": "Nii-chan! I scored twice today! The second one was YOUR kick. The curving one!" },
+          { "sender": "them", "time": "11:58 PM", "text": "Good." },
+          { "sender": "you", "time": "11:59 PM", "text": "That's it?? Just 'good'?! It took me three months to copy that kick!" },
+          { "sender": "them", "time": "12:04 AM", "text": "Busy. Later." },
+
+          { "sender": "you", "time": "04:50 PM", "date": "May 24, 2014", "text": "The ice cream lady gave me a free popsicle today. She said I looked lonely without you. Can you believe her?" },
+          { "sender": "you", "time": "04:58 PM", "text": "...Maybe she's a little right. Call me when you're free?" },
+          { "sender": "them", "time": "09:21 PM", "text": "Training is heavy right now. Don't wait up for my replies." },
+          { "sender": "you", "time": "09:22 PM", "text": "Okay! Then I'll just keep texting and you can read them whenever. Deal!" },
+
+          { "sender": "you", "time": "07:47 PM", "date": "June 3, 2014", "text": "You called Mom today? She looked worried after. Is everything okay over there?" },
+          { "sender": "them", "time": "11:50 PM", "text": "It's fine." },
+          { "sender": "you", "time": "11:52 PM", "text": "You'd tell me if it wasn't, right?" },
+
+          { "sender": "you", "time": "03:15 PM", "date": "June 14, 2014", "text": "It's been raining here all week. Sock passes in the living room aren't the same alone." },
+          { "sender": "you", "time": "03:20 PM", "text": "Are you eating well?" },
+          { "sender": "them", "time": "10:37 PM", "text": "Yeah." },
+
+          { "sender": "you", "time": "08:05 PM", "date": "June 22, 2014", "text": "I know training is crazy. Just... one text a week is enough, okay? Even one word." },
+          { "sender": "them", "time": "11:14 PM", "text": "Ok." },
+          { "sender": "you", "time": "11:15 PM", "text": "!!! See, that wasn't so hard c: Good night, Nii-chan!" },
+
+          { "sender": "you", "time": "09:10 PM", "date": "June 28, 2014", "text": "Nii-chan? It's been a few days." },
+          { "sender": "you", "time": "09:48 PM", "text": "Did something happen?" },
 
           { "sender": "you", "time": "04:15 PM", "date": "July 01, 2014", "text": "Nii-chan! How is Madrid? Did you practice a new move?" },
           { "sender": "you", "time": "05:54 PM", "text": "I hope you're eating well and making lots of goals!" },
           { "sender": "you", "time": "09:30 PM", "text": "Are you busy with training? Let me know when you get this!" },
 
+          { "sender": "you", "time": "08:44 PM", "date": "July 9, 2014", "text": "Weekly report! 200 shots today. My legs are jelly. Re Al better have room for two Itoshis." },
+
+          { "sender": "you", "time": "06:03 PM", "date": "July 16, 2014", "text": "The vending machine gave me two sodas today. Lucky day. I'm saving yours for when you visit." },
+
+          { "sender": "you", "time": "07:21 PM", "date": "July 25, 2014", "text": "Coach said my shots are getting sharper. If I keep this up, the scouts will notice me too, right?" },
+
+          { "sender": "you", "time": "08:10 PM", "date": "August 2, 2014", "text": "Weekly report: 5 goals in the practice match. Also Mom burnt the rice and blamed the pot. The house almost exploded." },
+
           { "sender": "you", "time": "06:12 PM", "date": "August 14, 2014", "text": "I washed and folded all your left gym shirts today. Mom said I didn't have to, but I wanted your room to be clean when you get back." },
           { "sender": "you", "time": "06:15 PM", "text": "Your phone is still going straight to voicemail... maybe the signal in Spain is bad?" },
 
+          { "sender": "you", "time": "09:40 PM", "date": "September 20, 2014", "text": "I found a clip of your interview. You said 'the team is lacking'. So cool... I watched it 11 times." },
+          { "sender": "you", "time": "09:44 PM", "text": "I'm practicing my weak foot every night now. When Re Al scouts me, we can be on the same team again." },
+
           { "sender": "you", "time": "06:20 PM", "date": "October 10, 2014", "text": "Happy Birthday, Nii-chan!" },
           { "sender": "you", "time": "06:21 PM", "text": "I practiced for 4 hours today to celebrate. I miss you." },
+          { "sender": "them", "time": "06:22 PM", "text": "Thank you." },
+          { "sender": "you", "time": "06:22 PM", "text": "!!! You're there!! How are you?? How's Madrid? Are you eating well??" },
+          { "sender": "you", "time": "06:23 PM", "text": "Nii-chan?" },
+          { "sender": "you", "time": "06:40 PM", "text": "It's okay if you're busy! Happy birthday again. Talk soon, okay?" },
+
+          { "sender": "you", "time": "05:15 PM", "date": "November 8, 2014", "text": "It's getting cold here. Does Madrid get cold? Buy a proper coat. Don't get sick over there." },
 
           { "sender": "you", "time": "05:00 AM", "date": "December 25, 2014", "text": "Merry Christmas, Nii-chan!" },
           { "sender": "you", "time": "05:02 AM", "text": "Mom made your favorite kelp tea. I saved a cup for you in case you call." },
@@ -145,12 +263,19 @@
           { "sender": "you", "time": "07:40 PM", "date": "February 12, 2015", "text": "Nii-chan, my phone says the messages are delivering, but why aren't you opening them?" },
           { "sender": "you", "time": "07:42 PM", "text": "If it's something I did, I'm sorry. I won't bother you again." },
 
+          { "sender": "you", "time": "06:38 PM", "date": "March 15, 2015", "text": "I know I said I'd stop bothering you. This is the last one. Okay, maybe not." },
+          { "sender": "you", "time": "06:39 PM", "text": "New juggling record: 703. Beat that when you come home." },
+
           { "sender": "you", "time": "04:45 PM", "date": "May 23, 2015", "text": "Nii-chan, I almost punched a teammate today." },
           { "sender": "you", "time": "04:46 PM", "text": "He said I'm nothing without you. I'm going to prove him wrong for both of us." },
+
+          { "sender": "you", "time": "08:52 PM", "date": "June 30, 2015", "text": "Half the year is gone already. I'm still keeping my end of the promise. Are you keeping yours?" },
 
           { "sender": "you", "time": "07:12 PM", "date": "September 09, 2015", "text": "I saw an English article about your match today!" },
           { "sender": "you", "time": "07:15 PM", "text": "I bought a dictionary so I can read all of them without help now." },
           { "sender": "you", "time": "11:58 PM", "text": "I'm also 13 now! Just letting you know. Goodd night, Nii-chan." },
+
+          { "sender": "you", "time": "07:07 PM", "date": "October 10, 2015", "text": "Happy Birthday, Nii-chan. I couldn't reach you, so I practiced twice as hard instead. That counts as a gift, right?" },
 
           { "sender": "you", "time": "08:30 PM", "date": "January 01, 2016", "text": "Happy New Year, Nii-chan. Are you sleeping?" },
 
@@ -161,26 +286,49 @@
           { "sender": "you", "time": "05:10 PM", "date": "July 27, 2016", "text": "I drew the sunset over our riverbank pitch today." },
           { "sender": "you", "time": "05:11 PM", "text": "It looks just like how it did when we used to practice here together." },
 
+          { "sender": "you", "time": "06:26 PM", "date": "August 11, 2016", "text": "A scout came to watch our match today. Not Re Al yet. But I'm getting closer to you. Wait for me." },
+
+          { "sender": "you", "time": "09:12 PM", "date": "November 2, 2016", "text": "Mom had you on speaker today. I heard your voice for the first time in forever." },
+          { "sender": "you", "time": "09:15 PM", "text": "Next time, ask for me too. I have two years of things to tell you." },
+
           { "sender": "you", "time": "07:05 PM", "date": "March 18, 2017", "text": "I strained my ankle during a scrimmage today." },
           { "sender": "you", "time": "07:06 PM", "text": "I tried icing it like you used to do for me, but I couldn't wrap the bandage right by myself." },
           { "sender": "you", "time": "07:10 PM", "text": "It really hurts, Nii-chan." },
 
+          { "sender": "you", "time": "03:05 AM", "date": "April 11, 2017", "text": "Found a stream of your youth match. You got faster. Your passes are scary now." },
+          { "sender": "you", "time": "03:08 AM", "text": "Three years exactly since the airport. I'm still coming for you. Wait for me." },
+
           { "sender": "you", "time": "06:05 PM", "date": "October 29, 2017", "text": "We won the regional tournament today!" },
           { "sender": "you", "time": "06:06 PM", "text": "I adapted your playstyle and led the team to victory. I hope you're proud of me." },
 
-          { "sender": "you", "time": "09:14 PM", "date": "November 20, 2017", "text": "Nii-chan... I miss you so much. Why aren't you answering me?" },
+          { "sender": "you", "time": "09:14 PM", "date": "November 20, 2017", "text": "Nii-chan... I miss you so much. Signal's still bad huh?" },
 
+          { "sender": "you", "time": "11:47 PM", "date": "December 5, 2017", "text": "I hate you!" },
+          { "sender": "you", "time": "11:47 PM", "text": "I HATE YOU! I HATE YOU! I HATE YOU!" },
 
+          { "sender": "you", "time": "05:52 PM", "date": "July 5, 2018", "text": "A classmate keeps dragging me out. Aoi. We're going out again this weekend. Not that you'd care." },
+          { "sender": "them", "time": "06:47 PM", "text": "Why are you wasting your time on such lukewarm things?" },
+          { "sender": "you", "time": "06:48 PM", "text": "...Four years of silence and THAT'S what makes you reply?" },
+          { "sender": "you", "time": "06:50 PM", "text": "Screw you. I'll waste my time however I want." },
 
+          { "sender": "you", "time": "10:12 PM", "date": "March 3, 2019", "text": "I beat you." },
+          { "sender": "you", "time": "10:12 PM", "text": "Do you hear me? I BEAT YOU." },
+          { "sender": "them", "time": "10:58 PM", "text": "You call that a win?" },
+          { "sender": "you", "time": "11:00 PM", "text": "FUCK YOU!" },
+          { "sender": "you", "time": "11:02 PM", "text": "I dragged that entire team on my back while you stood there with your dead fish eyes and it's STILL not enough for you?!" },
+          { "sender": "you", "time": "11:04 PM", "text": "What do you want from me?! I became everything you said I couldn't. I took your place. I took your playstyle and made it BETTER. And you can't even give me ONE win?!" },
+          { "sender": "you", "time": "11:09 PM", "text": "I hate you. I hate you so much it's eating me alive." },
+          { "sender": "you", "time": "11:31 PM", "text": "...why won't you just look at me" },
+          { "sender": "you", "time": "11:31 PM", "text": "You know what, SCREW YOU!" },
 
-          { "sender": "them", "time": "06:01 PM", "date": "March 9, 2019", "text": "RIN?! WHAT HAPPENED?" },
-          { "sender": "them", "time": "06:01 PM", "text": "RIN! ANSWER YOUR PHONE DAMN IT!" },
-          { "sender": "them", "time": "06:02 PM", "text": "RIN! PLEASE!" },
-          { "sender": "them", "time": "06:02 PM", "text": "THIS IS SERIOUS, RIN!" },
-          { "sender": "them", "time": "06:02 PM", "text": "Mom is trying to reach you, but you won't answer!" },
-          { "sender": "them", "time": "06:03 PM", "text": "Rin?! Please answer!" },
+          { "sender": "them", "time": "08:01 PM", "date": "March 9, 2019", "text": "RIN?! WHAT HAPPENED?" },
+          { "sender": "them", "time": "08:01 PM", "text": "RIN! ANSWER YOUR PHONE DAMN IT!" },
+          { "sender": "them", "time": "08:02 PM", "text": "RIN! PLEASE!" },
+          { "sender": "them", "time": "08:02 PM", "text": "THIS IS SERIOUS, RIN!" },
+          { "sender": "them", "time": "08:02 PM", "text": "Mom is trying to reach you, but you won't answer!" },
+          { "sender": "them", "time": "08:03 PM", "text": "Rin?! Please answer!" },
 
-          { "sender": "them", "time": "01:26 AM", "date": "May 20, 2019", "text": "If you're reading this, it means they finally gave your phone back. I know I had no right to go through your things... but reading your notes, the photos, seeing how you held onto every single piece of us... it destroyed me, Rin. It completely crushed me.\n\nI spoke to the doctor. He said you lost your memory... that you don't know who I am anymore. They say it might be temporary, but God, Rin, please... please try to remember. I know I ruined you, I know I'm the last person you ever wanted to see, but don't erase me like this. Hate me, scream at me, beat me to a pulp. Do whatever you need to do, but please don't forget me. I can't bear the thought of becoming a complete stranger to you.\n\nI'm sending this because I just need you to know the truth. I didn't say those things that night because I stopped caring about you. It was the exact opposite. I did it because I saw the absolute monster of a striker inside you, a talent so pure it made my own dreams look hollow. I am the lukewarm failure here, Rin. Not you. I couldn't let you ruin your potential just to follow in the footsteps of a brother who wasn't strong enough.\n\nI smashed your dream because I wanted you to build a bigger one. But I was foolish. I didn't realize that in doing so, I would destroy you entirely. Seeing the way you look at the world now, filled with pure resentment and pain, is a weight I'll carry for the rest of my life. Walking away from you on that snowy night ripped my heart out of my chest. I wanted to turn around. God, I wanted to turn around and hold you so badly.\n\nWhat we have between us... I know it isn't normal. The world would call it wrong. But loving you is the only real, sacred thing I’ve ever had. I would choose you in every lifetime, under any sky, even if it always ends in this heartbreak. Everything I did, I did because your existence means more to me than my own.\n\nI’m so sorry for breaking you, Rin. I’m so sorry I couldn't be the hero you deserved.\n\nI'll be at the riverbank at sunset. Every day, until my time in Japan runs out and I have to board that plane. If there is even a tiny piece of you that still remembers who we used to be, please come.\n\nI love you, Rin. Always." }
+          { "sender": "them", "time": "01:26 AM", "date": "March 20, 2019", "text": "If you're reading this, it means they finally gave your phone back. I know I had no right to go through your things... but reading your notes, the photos, seeing how you held onto every single piece of us... it destroyed me, Rin. It completely crushed me.\n\nI spoke to the doctor. He said you lost your memory... that you don't know who I am anymore. They say it might be temporary, but God, Rin, please... please try to remember. I know I ruined you, I know I'm the last person you ever wanted to see, but don't erase me like this. Hate me, scream at me, beat me to a pulp. Do whatever you need to do, but please don't forget me. I can't bear the thought of becoming a complete stranger to you.\n\nI'm sending this because I just need you to know the truth. I didn't say those things that night because I stopped caring about you. It was the exact opposite. I did it because I saw the absolute monster of a striker inside you, a talent so pure it made my own dreams look hollow. I am the lukewarm failure here, Rin. Not you. I couldn't let you ruin your potential just to follow in the footsteps of a brother who wasn't strong enough.\n\nI smashed your dream because I wanted you to build a bigger one. But I was foolish. I didn't realize that in doing so, I would destroy you entirely. Seeing the way you look at the world now, filled with pure resentment and pain, is a weight I'll carry for the rest of my life. Walking away from you on that snowy night ripped my heart out of my chest. I wanted to turn around. God, I wanted to turn around and hold you so badly.\n\nWhat we have between us... I know it isn't normal. The world would call it wrong. But loving you is the only real, sacred thing I’ve ever had. I would choose you in every lifetime, under any sky, even if it always ends in this heartbreak. Everything I did, I did because your existence means more to me than my own.\n\nI’m so sorry for breaking you, Rin. I’m so sorry I couldn't be the hero you deserved.\n\nI'll be at the riverbank at sunset. Every day, until my time in Japan runs out and I have to board that plane. If there is even a tiny piece of you that still remembers who we used to be, please come.\n\nI love you, Rin. Always." }
         ]
       },
 
@@ -189,10 +337,14 @@
         "name": "Mom",
         "icon": "M",
         "avatarImage": "",
-        "snippet": "Get home safe, darling!",
-        "date": "Fri",
-        "unread": 0,
+        "snippet": "We're coming to find you. Stay where you are. Mommy's coming.",
+        "date": "3/9/19",
+        "unread": 6,
         "messages": [
+          { "sender": "them", "time": "04:30 PM", "date": "May 18, 2011", "text": "Rin, did you and Sae wash your hands before coming in?" },
+          { "sender": "you", "time": "04:31 PM", "text": "Yes Mom, we're taking off our cleats now." },
+          { "sender": "them", "time": "04:32 PM", "text": "Good boy. Dinner will be ready in 20 minutes!" },
+
           { "sender": "them", "time": "5:45 PM", "date": "September 11, 2011", "text": "Get home safe, darling!" },
           { "sender": "you", "time": "5:46 PM", "text": "I will! I'm with Nii-chan." },
 
@@ -201,9 +353,9 @@
           { "sender": "them", "time": "03:47 PM", "text": "Sae isn't even home yet! Nice try, young man." },
           { "sender": "you", "time": "03:48 PM", "text": "Moving them now..." },
 
-          { "sender": "them", "time": "04:30 PM", "date": "May 18, 2011", "text": "Rin, did you and Sae wash your hands before coming in?" },
-          { "sender": "you", "time": "04:31 PM", "text": "Yes Mom, we're taking off our cleats now." },
-          { "sender": "them", "time": "04:32 PM", "text": "Good boy. Dinner will be ready in 20 minutes!" },
+          { "sender": "them", "time": "11:20 AM", "date": "August 7, 2012", "text": "Look at this cat I saw at the market. It looks exactly like you when you wake up." },
+          { "sender": "you", "time": "11:24 AM", "text": "Mom, delete that." },
+          { "sender": "them", "time": "11:25 AM", "text": "Never. It's my wallpaper now." },
 
           { "sender": "them", "time": "02:10 PM", "date": "January 19, 2013", "text": "Rin, please tell your brother to stop practicing bounce passes off the hallway wall." },
           { "sender": "you", "time": "02:11 PM", "text": "I tried. He said the wall has better defense than my team." },
@@ -220,7 +372,6 @@
           { "sender": "them", "time": "06:23 PM", "text": "Sae is literally in Spain, Rin." },
           { "sender": "you", "time": "06:24 PM", "text": "...It was really good though." },
 
-
           { "sender": "them", "time": "07:10 AM", "date": "April 12, 2015", "text": "Did you take your lunch box from the counter?" },
           { "sender": "you", "time": "07:11 AM", "text": "Got it! Thanks Mom." },
           { "sender": "them", "time": "07:12 AM", "text": "Have a good day at school! Work hard!" },
@@ -230,35 +381,69 @@
           { "sender": "them", "time": "07:33 PM", "text": "Silly boy! I told you that sauce was way too strong for you!" },
           { "sender": "you", "time": "07:34 PM", "text": "My tongue is completely dead, Mom." },
 
+          { "sender": "them", "time": "05:50 PM", "date": "March 13, 2016", "text": "I bought you new pants. You grew again." },
+          { "sender": "you", "time": "05:55 PM", "text": "The old ones are fine." },
+          { "sender": "them", "time": "05:56 PM", "text": "Rin, they end above your ankles. You look like a scarecrow." },
+          { "sender": "you", "time": "05:58 PM", "text": "Eh?" },
 
           { "sender": "them", "time": "06:45 PM", "date": "November 20, 2016", "text": "Rin, do we need extra milk from the store?" },
           { "sender": "you", "time": "06:46 PM", "text": "Yeah, buy two cartons please." },
           { "sender": "them", "time": "06:47 PM", "text": "Okay, see you in a bit!" },
-
 
           { "sender": "them", "time": "08:15 AM", "date": "April 20, 2017", "text": "Rin, your teacher called. She said you drew soccer plays across your entire English exam?!" },
           { "sender": "you", "time": "08:18 AM", "text": "I drew them on the back of the paper..." },
           { "sender": "them", "time": "08:20 PM", "text": "She said it bled through to the front! No extra dessert tonight!" },
           { "sender": "you", "time": "08:21 PM", "text": "It was a tactical setup for Spain though..." },
 
+          { "sender": "them", "time": "10:05 AM", "date": "January 21, 2018", "text": "I heard you up at 3 AM again, sweetheart. Please try to sleep." },
+          { "sender": "you", "time": "12:40 PM", "text": "I'm fine." },
+          { "sender": "them", "time": "12:42 PM", "text": "You always say that... I left your favorite in the fridge, okay?" },
+
           { "sender": "them", "time": "08:30 PM", "date": "February 14, 2018", "text": "Rin, your dinner is on the table under the cover." },
           { "sender": "you", "time": "08:35 PM", "text": "Thanks. I'm going to finish my night runs first." },
           { "sender": "them", "time": "08:36 PM", "text": "Don't stay out too late in the cold, okay?" },
 
-          { "sender": "them", "time": "09:00 PM", "date": "December 14, 2018", "text": "Rin, there is a giant pile of mud near the front door. Explain." },
-          { "sender": "you", "time": "09:05 PM", "text": "That's my shoes." },
-          { "sender": "them", "time": "09:06 PM", "text": "Clean them before tomorrow morning or I'm throwing them in the yard." },
-          { "sender": "you", "time": "09:08 PM", "text": "Doing it now." },
+          { "sender": "them", "time": "01:35 PM", "date": "May 27, 2018", "text": "The school nurse called. You skipped lunch again." },
+          { "sender": "you", "time": "03:10 PM", "text": "Wasn't hungry." },
+          { "sender": "them", "time": "03:12 PM", "text": "Rin, please eat. Even just a little. For me?" },
+
+          { "sender": "them", "time": "09:50 PM", "date": "August 19, 2018", "text": "You barely said a word at dinner. Is everything okay?" },
+          { "sender": "them", "time": "10:15 PM", "text": "You know you can talk to me about anything, right? Anything at all. I'm your mom." },
+          { "sender": "you", "time": "11:02 PM", "text": "I know. Good night." },
+
+          { "sender": "them", "time": "08:12 PM", "date": "November 22, 2018", "text": "They said no phones are allowed in there, but I'm going to text you anyway. That way you'll have something to read when you come home." },
+          { "sender": "them", "time": "08:14 PM", "text": "Eat all your vegetables. Even the bitter ones. ESPECIALLY the bitter ones." },
+          { "sender": "them", "time": "08:20 PM", "text": "We miss you at the dinner table already." },
+
+          { "sender": "them", "time": "11:45 PM", "date": "December 25, 2018", "text": "Merry Christmas, my baby. I cooked for four out of habit again." },
+          { "sender": "them", "time": "11:47 PM", "text": "I hope they at least let you boys watch the fireworks in there." },
+
+          { "sender": "them", "time": "02:30 PM", "date": "January 13, 2019", "text": "Grandma asked about you today. I showed her your tournament video and she cried. Happy tears!" },
+          { "sender": "them", "time": "02:36 PM", "text": "Remember to greet your teammates in the mornings. Socializing won't hurt you, sweetheart." },
+          { "sender": "them", "time": "02:41 PM", "text": "I know you're rolling your eyes at this. Do it anyway." },
+
+          { "sender": "them", "time": "07:55 PM", "date": "February 6, 2019", "text": "The house is so quiet. Even Dad said he misses the ball thumping against the wall. THE WALL THUMPING, Rin. He misses it." },
+          { "sender": "them", "time": "08:03 PM", "text": "Are they feeding you properly? Sleeping enough? I worry about you every single day." },
+          { "sender": "them", "time": "08:10 PM", "text": "Come home soon, okay? I love you." },
 
           { "sender": "them", "time": "01:10 PM", "date": "March 02, 2019", "text": "Rin, are you coming home directly after practice?" },
           { "sender": "you", "time": "01:15 PM", "text": "No. Doing extra solo drills." },
           { "sender": "them", "time": "01:16 PM", "text": "Alright, make sure you eat properly." },
-          { "sender": "you", "time": "01:20 PM", "text": "I will, Mom. See you in a few days." }
+          { "sender": "you", "time": "01:20 PM", "text": "I will, Mom. See you in a few days." },
+
+          { "sender": "them", "time": "10:25 AM", "date": "March 4, 2019", "text": "How was the match? Did you and Sae get to talk?" },
+          { "sender": "you", "time": "01:50 PM", "text": "No." },
+          { "sender": "them", "time": "01:52 PM", "text": "Okay... I won't ask again. I'm always here, sweetheart. I love you." },
+
+          { "sender": "them", "time": "07:58 PM", "date": "March 9, 2019", "text": "Rin, sweetheart, where are you? The neighbor said you weren't home yet." },
+          { "sender": "them", "time": "08:00 PM", "text": "I'm calling you. Please pick up." },
+          { "sender": "them", "time": "08:05 PM", "text": "Rin, this isn't funny. Answer your phone." },
+          { "sender": "them", "time": "08:05 PM", "text": "Please please please" },
+          { "sender": "them", "time": "08:12 PM", "text": "Baby, please. Just tell me you're okay." },
+          { "sender": "them", "time": "08:24 PM", "text": "We're coming to find you!" }
 
         ]
 
-
-        
       },
 
       {
@@ -266,12 +451,79 @@
         "name": "Dad",
         "icon": "D",
         "avatarImage": "",
-        "snippet": "See you in a few weeks, Rin",
-        "date": "Wed",
-        "unread": 0,
+        "snippet": "We're on our way. Please pick up.",
+        "date": "3/9/19",
+        "unread": 5,
         "messages": [
-          { "sender": "them", "time": "2:15 PM", "text": "See you in a few weeks, Rin" },
-          { "sender": "you", "time": "2:16 PM", "text": "Safe travels!" }
+          { "sender": "them", "time": "07:12 PM", "date": "September 11, 2010", "text": "TESTING. THIS IS DAD." },
+          { "sender": "them", "time": "07:14 PM", "text": "TESTING. THIS IS DAD." },
+          { "sender": "you", "time": "07:15 PM", "text": "Hi Dad! You sent it twice. And why are you yelling?" },
+          { "sender": "them", "time": "07:20 PM", "text": "How do I turn off the big letters?" },
+
+          { "sender": "them", "time": "06:50 PM", "date": "April 8, 2011", "text": "Mom told me you boys won the whole thing. That's my sons! Pick a restaurant, we'll celebrate on Sunday." },
+          { "sender": "you", "time": "06:52 PM", "text": "The popsicle stand by the river!" },
+          { "sender": "them", "time": "06:55 PM", "text": "Rin, that is not a restaurant." },
+
+          { "sender": "them", "time": "09:45 PM", "date": "December 24, 2011", "text": "Santa called. He says boys who are still awake at 10 PM get socks instead of presents." },
+          { "sender": "you", "time": "09:47 PM", "text": "Dad, I'm 9. I know Santa doesn't have a phone." },
+          { "sender": "them", "time": "09:50 PM", "text": "Then who did I just talk to? Go to sleep." },
+
+          { "sender": "them", "time": "08:20 PM", "date": "April 22, 2012", "text": "I heard you two laughing through the wall. It's just a haircut." },
+          { "sender": "you", "time": "08:22 PM", "text": "It was Nii-chan! He said it first!" },
+          { "sender": "them", "time": "08:25 PM", "text": "Traitor. Both of you are washing the car this weekend." },
+
+          { "sender": "them", "time": "03:05 PM", "date": "September 9, 2012", "text": "How's your brother doing?" },
+          { "sender": "you", "time": "03:07 PM", "text": "Still green. He's hugging the trash can by the exit." },
+          { "sender": "them", "time": "03:09 PM", "text": "That's what he gets for acting tough on the roller coaster. Meet us at the parking lot. Happy birthday, champ." },
+
+          { "sender": "them", "time": "04:20 PM", "date": "June 15, 2013", "text": "Rin, grab milk and eggs on your way home from practice." },
+          { "sender": "you", "time": "05:35 PM", "text": "Got them!" },
+          { "sender": "them", "time": "06:12 PM", "text": "Son, this is strawberry milk and a chocolate egg." },
+          { "sender": "you", "time": "06:14 PM", "text": "You didn't say which kind." },
+
+          { "sender": "them", "time": "05:40 PM", "date": "September 18, 2013", "text": "Rin, how do I send a photo to your mother? It keeps sending my thumb." },
+          { "sender": "you", "time": "05:45 PM", "text": "Point the camera AWAY from you first. I'll call you." },
+          { "sender": "them", "time": "06:02 PM", "text": "Got it. Thank you. Don't tell your brother about the thumb." },
+
+          { "sender": "them", "time": "09:10 PM", "date": "April 12, 2014", "text": "Your brother landed safely in Madrid. Don't stay up too late, you have morning practice." },
+          { "sender": "you", "time": "09:12 PM", "text": "I know. Good night, Dad." },
+
+          { "sender": "them", "time": "07:05 PM", "date": "July 18, 2014", "text": "A hat-trick?! That's my son! We're getting sushi tonight, the expensive one." },
+          { "sender": "you", "time": "07:08 PM", "text": "The conveyor belt place isn't the expensive one, Dad." },
+          { "sender": "them", "time": "07:11 PM", "text": "The plates are gold-colored, Rin. It counts." },
+
+          { "sender": "them", "time": "04:30 PM", "date": "August 22, 2015", "text": "Bought a new camera today. Took some shots of you juggling. When you make Nationals, I'll have the pictures ready." },
+          { "sender": "you", "time": "04:38 PM", "text": "You used the flash the whole time. It was blinding me." },
+          { "sender": "them", "time": "04:41 PM", "text": "That's how you know the photo is good." },
+          { "sender": "you", "time": "04:45 PM", "text": "What? No it's not. Let Mom help you with the flash next time." },
+
+          { "sender": "them", "time": "02:15 PM", "date": "May 25, 2016", "text": "Heading to Osaka for work. See you in a few weeks, Rin. Listen to your mom." },
+          { "sender": "you", "time": "02:16 PM", "text": "Safe travels!" },
+
+          { "sender": "them", "time": "01:50 PM", "date": "July 18, 2017", "text": "Rin, the TV says 'no signal' and your mother's drama starts in 10 minutes. This is an emergency." },
+          { "sender": "you", "time": "01:55 PM", "text": "Did you sit on the remote and change the input again?" },
+          { "sender": "them", "time": "02:05 PM", "text": "...The TV is fixed. No further questions." },
+          { "sender": "you", "time": "02:08 PM", "text": "You sat on it, didn't you. I'm calling you." },
+
+          { "sender": "them", "time": "07:30 PM", "date": "January 8, 2018", "text": "Mom told me about the mirror. We'll talk when I'm home." },
+          { "sender": "them", "time": "08:45 PM", "text": "Rin." },
+          { "sender": "you", "time": "09:20 PM", "text": "Fine." },
+
+          { "sender": "them", "time": "06:10 PM", "date": "October 2, 2018", "text": "We sent back the Blue Lock forms. Give it a real chance. It might be good for you." },
+          { "sender": "you", "time": "06:34 PM", "text": "Whatever. I already said I'd go." },
+
+          { "sender": "them", "time": "07:25 PM", "date": "December 2, 2018", "text": "Mom said you got your phone back. How is it in there? Are they feeding you properly?" },
+          { "sender": "you", "time": "08:40 PM", "text": "It's fine. The food is lukewarm." },
+          { "sender": "them", "time": "08:43 PM", "text": "Ha! Good one. Stay strong out there, son." },
+
+          { "sender": "them", "time": "09:15 PM", "date": "March 3, 2019", "text": "We watched the U-20 match. You were incredible out there, Rin. Proud of you." },
+          { "sender": "them", "time": "09:32 PM", "text": "Rest well. Mom's making your favorite tomorrow." },
+
+          { "sender": "them", "time": "08:28 PM", "date": "March 9, 2019", "text": "Rin, answer your phone. Mom has been calling you." },
+          { "sender": "them", "time": "08:30 PM", "text": "Rin" },
+          { "sender": "them", "time": "08:30 PM", "text": "RIN" },
+          { "sender": "them", "time": "08:37 PM", "text": "Call me back right now. Please." },
+          { "sender": "them", "time": "08:45 PM", "text": "We're on our way. Please pick up." }
         ]
       },
 
@@ -280,12 +532,54 @@
         "name": "NPC (Isagi)",
         "icon": "N",
         "avatarImage": "",
-        "snippet": "You: Shut up",
-        "date": "Mon",
-        "unread": 0,
+        "snippet": "Everyone's waiting for you. So wake up soon, alright?",
+        "date": "3/17/19",
+        "unread": 5,
         "messages": [
-          { "sender": "them", "time": "7:20 PM", "text": "Want to train together?" },
-          { "sender": "you", "time": "7:21 PM", "text": "Shut up" }
+          { "sender": "them", "time": "03:10 PM", "date": "December 15, 2018", "text": "Hey, it's Isagi! Got your number from the team list. About tomorrow's formation, do you have a minute?" },
+          { "sender": "you", "time": "03:25 PM", "text": "Why do you have my number." },
+          { "sender": "them", "time": "03:26 PM", "text": "...team list. Like I said. So, the formation?" },
+          { "sender": "you", "time": "03:38 PM", "text": "Calling. Talking to you in text takes too long." },
+          { "sender": "them", "time": "04:50 PM", "text": "That was actually really helpful. Thanks Rin!" },
+          { "sender": "you", "time": "05:02 PM", "text": "It was for the team's win rate. Not for you." },
+
+          { "sender": "them", "time": "09:05 PM", "date": "January 15, 2019", "text": "Hey. You seemed off today. Are you okay?" },
+          { "sender": "you", "time": "09:40 PM", "text": "Mind your own business." },
+          { "sender": "them", "time": "09:42 PM", "text": "Okay. But if you ever want to run drills to clear your head, I'm around. It works for me." },
+
+          { "sender": "them", "time": "07:20 PM", "date": "February 11, 2019", "text": "Want to train together?" },
+          { "sender": "you", "time": "07:21 PM", "text": "Shut up" },
+          { "sender": "them", "time": "07:22 PM", "text": "I'll be at field C at 6 AM if you change your mind." },
+          { "sender": "them", "time": "07:15 AM", "date": "February 12, 2019", "text": "You came!!" },
+          { "sender": "you", "time": "07:30 AM", "text": "I was already scheduled for field C. Don't flatter yourself." },
+          { "sender": "them", "time": "07:31 AM", "text": "The schedule board was empty, Rin." },
+          { "sender": "you", "time": "07:33 AM", "text": "Then it's a good thing I don't care what you think. Same time tomorrow. Don't be late." },
+
+          { "sender": "them", "time": "08:40 PM", "date": "February 26, 2019", "text": "About the selection. Your second half was the scariest thing I've ever seen on a pitch. For what it's worth." },
+          { "sender": "you", "time": "09:15 PM", "text": "I don't need pity. Especially not from you." },
+          { "sender": "them", "time": "09:17 PM", "text": "It's not pity. You're the guy I have to beat. That's all." },
+          { "sender": "you", "time": "09:26 PM", "text": "...Finally something we agree on." },
+
+          { "sender": "them", "time": "07:02 PM", "date": "March 4, 2019", "text": "Tried calling. Good match yesterday. Everyone's talking about your brother's passes, but you carried the finish." },
+          { "sender": "you", "time": "07:45 PM", "text": "I know." },
+          { "sender": "them", "time": "07:46 PM", "text": "Haha. Of course you do." },
+
+          { "sender": "them", "time": "11:30 AM", "date": "March 7, 2019", "text": "Did you seriously just call me to analyze the U-20 replay for an hour?" },
+          { "sender": "you", "time": "11:36 AM", "text": "You noticed things the others didn't. That's all." },
+          { "sender": "them", "time": "11:37 AM", "text": "Was that... a compliment?" },
+          { "sender": "you", "time": "11:39 AM", "text": "It was an observation. Don't get used to it." },
+
+          { "sender": "them", "time": "12:05 AM", "date": "March 9, 2019", "text": "Sorry for the midnight call!! Couldn't sleep. I figured out the counterattack pattern from the replay. Call me when you're up?" },
+          { "sender": "you", "time": "08:14 AM", "text": "It's called sleeping. Try it." },
+          { "sender": "you", "time": "08:15 AM", "text": "I'm busy today. I'll call tomorrow." },
+          { "sender": "them", "time": "08:20 AM", "text": "Deal. Tomorrow!" },
+
+          { "sender": "them", "time": "05:40 PM", "date": "March 11, 2019", "text": "Hey. Anri-san told us what happened. Everyone's shaken up. Bachira won't stop texting you, so I figure yours will be the loudest inbox in Japan." },
+          { "sender": "them", "time": "05:42 PM", "text": "Get better. The team needs you. I need you at your best, or beating you won't mean anything." },
+          { "sender": "them", "time": "05:45 PM", "text": "And you still owe me a call. Wake up soon, Rin." },
+
+          { "sender": "them", "time": "07:20 PM", "date": "March 17, 2019", "text": "Team update, since I know you hate being out of the loop: Chigiri and Kunigami ask about you at every meal. Nagi actually put his game down when he heard — Reo says that's a first. Even Barou grunted something supportive, which from him is basically a speech." },
+          { "sender": "them", "time": "07:24 PM", "text": "Everyone's waiting for you. So wake up soon, alright? Beating everyone here means nothing if I can't beat you too." }
         ]
       },
 
@@ -294,12 +588,61 @@
         "name": "Pesky Cockroach (Shidou)",
         "icon": "PC",
         "avatarImage": "",
-        "snippet": "You: I'm not interested",
-        "date": "Mon",
-        "unread": 2,
+        "snippet": "wake up already lil itoshi. everyone here is mopey and it's ruining my vibe.",
+        "date": "3/16/19",
+        "unread": 10,
         "messages": [
-          { "sender": "them", "time": "6:00 PM", "text": "Let's play a match" },
-          { "sender": "you", "time": "6:01 PM", "text": "I'm not interested" }
+          { "sender": "them", "time": "08:48 PM", "date": "February 20, 2019", "text": "yo yo LIL ITOSHI!! guess who~" },
+          { "sender": "you", "time": "09:02 PM", "text": "Who is this." },
+          { "sender": "them", "time": "09:03 PM", "text": "your big bro gave me your number 😘 we're teammates now. me and sae I mean. not you. yet~" },
+          { "sender": "you", "time": "09:04 PM", "text": "He gave you WHAT." },
+          { "sender": "you", "time": "09:04 PM", "text": "Delete this number. Don't text me. And stop calling him 'sae' like you know him." },
+          { "sender": "them", "time": "09:05 PM", "text": "jealous already?? we JUST met" },
+
+          { "sender": "them", "time": "04:15 PM", "date": "February 28, 2019", "text": "you DECLINED my call. rude!! anyway sae did this insane no-look pass today and I buried it. thought you'd want the exclusive report" },
+          { "sender": "you", "time": "04:15 PM", "text": "I don't care." },
+          { "sender": "them", "time": "04:16 PM", "text": "you replied in 4 seconds lol" },
+
+          { "sender": "them", "time": "07:30 PM", "date": "March 2, 2019", "text": "ok real talk lil itoshi. the way you stare at him in the match footage. and the way HIS face does a thing when someone says your name. I've figured it out 😏" },
+          { "sender": "you", "time": "07:41 PM", "text": "You've figured out NOTHING. Shut up." },
+          { "sender": "them", "time": "07:41 PM", "text": "your caps lock says otherwise~" },
+          { "sender": "you", "time": "07:42 PM", "text": "I will actually end your career." },
+          { "sender": "them", "time": "07:43 PM", "text": "relax!! my lips are sealed. shipping you two is just my new cardio 🚢" },
+          { "sender": "you", "time": "07:45 PM", "text": "There is NOTHING to ship. We're brothers." },
+          { "sender": "them", "time": "07:45 PM", "text": "I didn't say anything about shipping WHO~ interesting that you knew tho" },
+
+          { "sender": "them", "time": "09:10 PM", "date": "March 4, 2019", "text": "SAW YOU AT THE MATCH. you two are the same person split in half on that field. couples who play together stay together~" },
+          { "sender": "you", "time": "09:25 PM", "text": "We're not. Stop. Talking." },
+          { "sender": "them", "time": "09:26 PM", "text": "flustered lil itoshi is my favorite lil itoshi" },
+
+          { "sender": "them", "time": "06:00 PM", "date": "March 5, 2019", "text": "Let's play a match" },
+          { "sender": "you", "time": "06:01 PM", "text": "I'm not interested" },
+          { "sender": "them", "time": "06:02 PM", "text": "liarrr~ sae says you've never once turned down a challenge" },
+          { "sender": "you", "time": "06:04 PM", "text": "One match. That's it. And STOP talking to him about me!" },
+          { "sender": "them", "time": "06:05 PM", "text": "can't help it. your name is the only thing that makes him talk 👀" },
+
+          { "sender": "them", "time": "02:10 PM", "date": "March 6, 2019", "text": "pick uuuup. I need my rematch. that 1v1 was the most fun I've had off-season" },
+          { "sender": "them", "time": "09:15 PM", "text": "you CALLED me?? lil itoshi called ME. just admit you like hanging out with me" },
+          { "sender": "you", "time": "09:18 PM", "text": "It was to tell you to stop texting Sae about me. That's all it was." },
+          { "sender": "them", "time": "09:20 PM", "text": "he reads them all, yknow. ignores everyone in the group chat. but your name? instant read receipts 👀" },
+          { "sender": "you", "time": "09:27 PM", "text": "...You're lying." },
+          { "sender": "them", "time": "09:27 PM", "text": "am I? 😏" },
+          { "sender": "you", "time": "09:31 PM", "text": "Good night, cockroach." },
+          { "sender": "them", "time": "09:32 PM", "text": "sweet dreams lil itoshi~ I'll tell him you said hi" },
+          { "sender": "you", "time": "09:32 PM", "text": "DON'T YOU DARE" },
+
+          { "sender": "them", "time": "11:20 AM", "date": "March 10, 2019", "text": "hey. heard what happened." },
+          { "sender": "them", "time": "11:22 AM", "text": "not funny, itoshi. this is the part where you text back 'shut up cockroach' and I say something charming" },
+          { "sender": "them", "time": "11:31 AM", "text": "sae looks like a ghost. hasn't eaten since the news. figured you'd want the exclusive report." },
+
+          { "sender": "them", "time": "08:45 PM", "date": "March 12, 2019", "text": "ok listen up itoshi rin. new plan. if you don't wake up, I'm taking sae for myself. striker partner AND brother. all mine 😘" },
+          { "sender": "them", "time": "08:46 PM", "text": "so you better wake up and fight me for him. that's a promise." },
+          { "sender": "them", "time": "08:52 PM", "text": "...seriously though. wake up. the rematch is still on and it's boring as hell without you." },
+          { "sender": "them", "time": "08:53 PM", "text": "🐝 boy and NPC won't shut up about you either. wake up and suffer with us. see ya, lil itoshi" },
+
+          { "sender": "them", "time": "07:35 PM", "date": "March 16, 2019", "text": "update from the u-20 side: karasu keeps asking sae about you, and sae's face does The Thing every time. it's tragic AND hilarious. anyway the whole locker room signed a get-well card" },
+          { "sender": "them", "time": "07:36 PM", "text": "I didn't sign it. my threats are hand-delivered only 😘" },
+          { "sender": "them", "time": "07:41 PM", "text": "wake up already lil itoshi. everyone here is mopey and it's ruining my vibe. that's YOUR fault. come fix it" }
         ]
       },
 
@@ -308,43 +651,231 @@
         "name": "Miss Anri Teieri",
         "icon": "A",
         "avatarImage": "",
-        "snippet": "Please get here before 5 PM. Thank you!",
-        "date": "Mon",
-        "unread": 0,
-        "messages": [{ "sender": "them", "time": "4:30 PM", "text": "Please get here before 5 PM. Thank you!" }]
+        "snippet": "The boys ask about you every single day. Get better soon, okay? We're all waiting for you.",
+        "date": "3/16/19",
+        "unread": 3,
+        "messages": [
+          { "sender": "them", "time": "07:45 PM", "date": "October 28, 2018", "text": "Good evening, Itoshi Rin-kun! This is Anri Teieri from the Blue Lock project. I received your registration forms, but the medical questionnaire page is missing. Could you send it over?" },
+          { "sender": "you", "time": "08:02 PM", "text": "Good evening. I apologize, I must have skipped the page. May I call you to confirm which sections are required?" },
+          { "sender": "them", "time": "08:05 PM", "text": "Of course!" },
+          { "sender": "you", "time": "08:35 PM", "text": "Thank you for the explanation. I'll mail the completed page tomorrow morning." },
+          { "sender": "them", "time": "08:36 PM", "text": "Perfect! We look forward to having you, Rin-kun ☺" },
+
+          { "sender": "them", "time": "05:20 PM", "date": "December 1, 2018", "text": "Your point redemption for the mobile phone has been processed! It's at the front desk." },
+          { "sender": "you", "time": "05:31 PM", "text": "Thank you, Miss Anri. I appreciate you handling it quickly." },
+          { "sender": "them", "time": "05:33 PM", "text": "So polite! If only the rest of the boys wrote requests like yours. Enjoy your phone!" },
+
+          { "sender": "them", "time": "10:15 AM", "date": "January 30, 2019", "text": "Following up on your call — I've booked the recovery room for your ice baths, same slot every evening. Anything else you need?" },
+          { "sender": "you", "time": "10:22 AM", "text": "That's everything. Thank you for arranging it, Miss Anri. Sorry for the early call." },
+          { "sender": "them", "time": "10:24 AM", "text": "Not at all! You're the only one here who apologizes. It's refreshing. Keep up the good work, Rin-kun!" },
+
+          { "sender": "them", "time": "04:30 PM", "date": "March 1, 2019", "text": "Please get here before 5 PM. Thank you!" },
+          { "sender": "you", "time": "04:33 PM", "text": "Understood. I'll be there by 4:30. Thank you, Miss Anri." },
+
+          { "sender": "them", "time": "09:40 PM", "date": "March 3, 2019", "text": "Congratulations on today's match, Rin-kun! Ego-san said something very Ego-san about it, but I'm certain he meant 'well done.'" },
+          { "sender": "you", "time": "10:05 PM", "text": "Thank you. And thank you for everything you arranged behind the scenes. Please rest well, Miss Anri." },
+
+          { "sender": "them", "time": "09:10 AM", "date": "March 9, 2019", "text": "Per your call — your transport back to the facility is booked for the 11th, 9 AM pickup. See you then!" },
+          { "sender": "you", "time": "09:14 AM", "text": "Thank you. Apologies for calling so early on a weekend." },
+          { "sender": "them", "time": "09:15 AM", "text": "Not at all! Enjoy the rest of your break, Rin-kun ☺" },
+
+          { "sender": "them", "time": "02:50 PM", "date": "March 10, 2019", "text": "Rin-kun... I heard from your parents. Please don't worry about anything here. Your spot isn't going anywhere. I promise." },
+          { "sender": "them", "time": "06:05 PM", "date": "March 12, 2019", "text": "I had to tell the team. I'm sorry if that wasn't my place, but they wouldn't stop asking why your transport was cancelled. They care about you a lot, you know." },
+          { "sender": "them", "time": "11:30 AM", "date": "March 16, 2019", "text": "The boys ask about you every single day. Get better soon, okay? We're all waiting for you." }
+        ]
       },
 
       {
-        "id": "empty-1",
-        "name": "Empty 1",
-        "icon": "?",
+        "id": "noisy-bee-bachira",
+        "name": "Noisy Bee (Bachira)",
+        "icon": "NB",
         "avatarImage": "",
-        "snippet": "",
-        "date": "",
-        "unread": 0,
-        "messages": []
+        "snippet": "everyone's saving your spot, rin. the monster too. wake up soon 🐝🐝🐝",
+        "date": "3/18/19",
+        "unread": 15,
+        "messages": [
+          { "sender": "them", "time": "10:12 AM", "date": "February 16, 2019", "text": "RIN RIN RIN it's me!! I got your number from Anri-chan hehe" },
+          { "sender": "them", "time": "10:12 AM", "text": "how's the wrist today?" },
+          { "sender": "you", "time": "10:40 AM", "text": "Fine." },
+          { "sender": "you", "time": "10:41 AM", "text": "Don't tell anyone. I mean it." },
+          { "sender": "them", "time": "10:42 AM", "text": "bee promise!! my lips are sealed. BUT in exchange you have to reply to my texts or I'll sting you" },
+          { "sender": "you", "time": "10:45 AM", "text": "That's not how promises work." },
+          { "sender": "them", "time": "10:45 AM", "text": "it is now!! 🐝" },
+
+          { "sender": "them", "time": "09:30 PM", "date": "February 20, 2019", "text": "rin. important question. if the monster in my head and the monster in your head played a match, who wins" },
+          { "sender": "you", "time": "09:52 PM", "text": "What are you talking about." },
+          { "sender": "them", "time": "09:53 PM", "text": "answer the question!!" },
+          { "sender": "you", "time": "09:55 PM", "text": "Mine. Obviously." },
+          { "sender": "them", "time": "09:55 PM", "text": "WRONG. it's a draw and then they become friends. like us!!" },
+          { "sender": "you", "time": "09:58 PM", "text": "We're not friends. We're teammates." },
+          { "sender": "them", "time": "09:58 PM", "text": "that's what friends are, silly" },
+
+          { "sender": "them", "time": "08:15 PM", "date": "February 25, 2019", "text": "hey. heard about the selection." },
+          { "sender": "you", "time": "08:47 PM", "text": "Don't." },
+          { "sender": "them", "time": "08:48 PM", "text": "ok!! not saying anything. but me and the monster are here. both of us. all night." },
+          { "sender": "them", "time": "08:50 PM", "text": "no bad thoughts tonight, okay? if one shows up, text me and I'll chase it away" },
+          { "sender": "you", "time": "09:30 PM", "text": "...Fine." },
+
+          { "sender": "them", "time": "01:45 PM", "date": "March 1, 2019", "text": "you didn't pick up!!! three times!!!" },
+          { "sender": "you", "time": "02:20 PM", "text": "I was training. Some of us take the U-20 match seriously." },
+          { "sender": "them", "time": "02:21 PM", "text": "I take it VERY seriously. that's why you need rest days, mister 'one more set'" },
+          { "sender": "them", "time": "02:22 PM", "text": "drink water. that's the whole message. bye!!" },
+
+          { "sender": "them", "time": "10:20 PM", "date": "March 3, 2019", "text": "WE WON WE WON WE WOOOON!!! you were SO COOL today rin!!" },
+          { "sender": "them", "time": "10:21 PM", "text": "the whole stadium was buzzing. get it? BUZZING" },
+          { "sender": "you", "time": "10:40 PM", "text": "We won. But I didn't beat him. It doesn't count." },
+          { "sender": "them", "time": "10:41 PM", "text": "hmm. how are you feeling? like actually feeling. fine-fine or rin-fine?" },
+          { "sender": "you", "time": "10:49 PM", "text": "I don't know what that means." },
+          { "sender": "them", "time": "10:50 PM", "text": "rin-fine is when you say fine but your eyes go all faraway. I've seen it" },
+          { "sender": "you", "time": "10:58 PM", "text": "I'm home for the break. I'm fine. Stop worrying." },
+          { "sender": "them", "time": "10:59 PM", "text": "not possible!! worrying about you is my new hobby. text me tomorrow or I call. those are the rules!!" },
+
+          { "sender": "them", "time": "01:36 PM", "date": "March 5, 2019", "text": "RIN. you didn't text and now you didn't pick up. TWICE." },
+          { "sender": "them", "time": "01:38 PM", "text": "I know you're home moping. did you eat? describe your lunch in detail. this is a wellness check 🐝" },
+          { "sender": "you", "time": "02:05 PM", "text": "Rice. Grilled fish. Miso soup. Stop spamming me." },
+          { "sender": "them", "time": "02:06 PM", "text": "PROOF ACCEPTED. wellness check passed. same time tomorrow!!" },
+          { "sender": "you", "time": "02:10 PM", "text": "This is harassment." },
+          { "sender": "them", "time": "02:10 PM", "text": "this is FRIENDSHIP" },
+
+          { "sender": "them", "time": "09:42 AM", "date": "March 6, 2019", "text": "YOU CALLED ME. you called ME first!!! I'm framing this day and hanging it on my wall" },
+          { "sender": "you", "time": "09:45 AM", "text": "You wouldn't stop texting otherwise. It was self-defense." },
+          { "sender": "them", "time": "09:46 AM", "text": "admit it. we're friends now" },
+          { "sender": "you", "time": "09:50 AM", "text": "We're teammates." },
+          { "sender": "them", "time": "09:50 AM", "text": "FRIENDS" },
+          { "sender": "you", "time": "09:51 AM", "text": "Teammates." },
+          { "sender": "them", "time": "09:51 AM", "text": "BEST friends 🐝🐝" },
+          { "sender": "you", "time": "09:53 AM", "text": "...Teammates." },
+          { "sender": "them", "time": "09:54 AM", "text": "he hesitated!!! the monster saw it too. no take-backs" },
+
+          { "sender": "them", "time": "02:15 PM", "date": "March 8, 2019", "text": "good call today!! your voice sounded lighter. the monster approves" },
+          { "sender": "you", "time": "02:30 PM", "text": "Whatever that means. Thanks for picking up." },
+          { "sender": "them", "time": "02:31 PM", "text": "!!!! did you just say thanks. RIN. who taught you that" },
+          { "sender": "you", "time": "02:33 PM", "text": "Forget it. I'm busy tomorrow. Don't call." },
+          { "sender": "them", "time": "02:34 PM", "text": "busyyy with whattt" },
+          { "sender": "you", "time": "02:36 PM", "text": "None of your business." },
+          { "sender": "them", "time": "02:37 PM", "text": "FINE. but text me after!! bee's orders!!" },
+
+          { "sender": "them", "time": "09:38 PM", "date": "March 9, 2019", "text": "rin!! you didn't text. bee's orders were CLEAR" },
+          { "sender": "them", "time": "09:52 PM", "text": "helloooo" },
+          { "sender": "them", "time": "10:15 PM", "text": "okay you're probably just sulking somewhere. text me when you see this and I'll pretend I wasn't worried" },
+          { "sender": "them", "time": "11:41 PM", "text": "rin? isagi said your brother was blowing up everyone's phones looking for you. what's going on??" },
+          { "sender": "them", "time": "11:59 PM", "text": "I'm not sleeping until you reply. me and the monster are staring at the phone" },
+
+          { "sender": "them", "time": "08:20 AM", "date": "March 10, 2019", "text": "anri-chan just told us." },
+          { "sender": "them", "time": "08:21 AM", "text": "rin" },
+          { "sender": "them", "time": "08:21 AM", "text": "please be okay. please please please" },
+          { "sender": "them", "time": "09:45 AM", "text": "they won't let us see you. family only. that's so dumb. I'M basically family. I'm your best teammate" },
+          { "sender": "them", "time": "09:50 PM", "text": "the whole team is coming the second you're awake. even the cockroach said he'd come. don't tell him I called him that" },
+
+          { "sender": "them", "time": "07:12 PM", "date": "March 15, 2019", "text": "hi rin. me again. I told the monster to stay with you until you wake up. take care of him. he bites" },
+          { "sender": "them", "time": "07:15 PM", "text": "the wellness checks aren't the same without your grumpy answers. rice, grilled fish, miso soup. see? I remember" },
+          { "sender": "them", "time": "07:19 PM", "text": "wake up soon, okay? we'll all be there the second they let us. bee promise 🐝" },
+
+          { "sender": "them", "time": "04:12 PM", "date": "March 18, 2019", "text": "OFFICIAL WORRY RANKING. isagi: worried. chigiri: worried. kunigami: bought you protein bars for when you wake up. nagi: said 'waking up sounds like a hassle but he should do it anyway'. reo: agreed with nagi. me: MOST worried. I win" },
+          { "sender": "them", "time": "04:15 PM", "text": "everyone's saving your spot, rin. the monster too. wake up soon 🐝🐝🐝" }
+        ]
       },
 
       {
-        "id": "empty-2",
-        "name": "Empty 2",
-        "icon": "?",
+        "id": "nanase",
+        "name": "Nanase",
+        "icon": "Na",
         "avatarImage": "",
-        "snippet": "",
-        "date": "",
-        "unread": 0,
-        "messages": []
+        "snippet": "wake up soon, okay? I still owe you for the chocolates!!",
+        "date": "3/13/19",
+        "unread": 2,
+        "messages": [
+          { "sender": "them", "time": "06:50 PM", "date": "December 20, 2018", "text": "Rin-kun! It's Nanase! I'm your new roommate starting tomorrow! I'll be in your care!! 🙇" },
+          { "sender": "you", "time": "07:15 PM", "text": "Don't touch my side of the room. Lights out at 10. No exceptions." },
+          { "sender": "them", "time": "07:16 PM", "text": "Yes sir!! You won't even know I'm there!!" },
+          { "sender": "you", "time": "07:18 PM", "text": "I doubt that." },
+
+          { "sender": "them", "time": "08:05 PM", "date": "January 18, 2019", "text": "Rin-kun your free kick today was INSANE. the wall didn't even move. can you teach me the run-up? please please please" },
+          { "sender": "you", "time": "08:30 PM", "text": "6 AM. Field B. If you're late even once, never ask me again." },
+          { "sender": "them", "time": "08:31 PM", "text": "I'll sleep in my cleats!!" },
+          { "sender": "you", "time": "08:33 PM", "text": "Do not sleep in your cleats." },
+
+          { "sender": "them", "time": "12:10 PM", "date": "February 14, 2019", "text": "Rin-kun there's ANOTHER pile of chocolates for you at the front desk. tried calling. what do I do with them" },
+          { "sender": "you", "time": "12:45 PM", "text": "Throw them out." },
+          { "sender": "them", "time": "12:46 PM", "text": "can I eat them instead" },
+          { "sender": "you", "time": "12:50 PM", "text": "...Fine. Don't get a stomachache. We have drills tomorrow." },
+          { "sender": "them", "time": "12:50 PM", "text": "you're the best, Rin-kun!!" },
+
+          { "sender": "them", "time": "05:25 PM", "date": "March 13, 2019", "text": "Rin-kun... Anri-san told us what happened. your side of the room is exactly how you left it. I'm keeping it clean. even the lights-out rule. 10 PM sharp, every night." },
+          { "sender": "them", "time": "05:28 PM", "text": "wake up soon, okay? I still owe you for the chocolates!!" }
+        ]
       },
 
       {
-        "id": "empty-3",
-        "name": "Empty 3",
+        "id": "akane-hatori",
+        "name": "Akane Hatori",
+        "icon": "AH",
+        "avatarImage": "",
+        "snippet": "I'll always be cheering for you. Take care of yourself, okay?",
+        "date": "1/10/18",
+        "unread": 1,
+        "messages": [
+          { "sender": "them", "time": "04:05 PM", "date": "May 21, 2013", "text": "Itoshi-kun... I'm sorry about today. I didn't mean to hold you up after class. Did I make your brother upset?" },
+          { "sender": "you", "time": "05:12 PM", "text": "It's fine." },
+          { "sender": "them", "time": "05:15 PM", "text": "About my answer... you don't have to say anything. I think I already understand. Thank you for hearing me out anyway." },
+
+          { "sender": "them", "time": "01:40 PM", "date": "June 30, 2013", "text": "Sensei paired us up for the summer project. Do you have time to plan it out?" },
+          { "sender": "you", "time": "01:52 PM", "text": "Let's go to the library and finish it quickly, I have practice." },
+          { "sender": "them", "time": "02:30 PM", "text": "Got it! I'll handle the research part. See you there, Itoshi-kun!" },
+
+          { "sender": "you", "time": "01:45 PM", "date": "August 5, 2013", "text": "Did you finish your half?" },
+          { "sender": "them", "time": "01:50 PM", "text": "Yes! I'll hand it to you tomorrow. Your diagrams are really impressive, by the way!" },
+          { "sender": "you", "time": "01:56 PM", "text": "Ok." },
+
+          { "sender": "them", "time": "02:35 PM", "date": "March 25, 2015", "text": "You weren't in class today, so I told sensei you had a tournament. I have all the handouts for you!" },
+          { "sender": "you", "time": "02:44 PM", "text": "Thanks. Calling you." },
+          { "sender": "them", "time": "03:10 PM", "text": "No problem. Congratulations on the match, everyone's been talking about your goals!" },
+
+          { "sender": "them", "time": "06:40 PM", "date": "January 10, 2018", "text": "Itoshi-kun, I'm sorry for stopping you in the hallway earlier. You just seem... different lately. If you ever need someone to talk to, I'm here. No pity, I promise." },
+          { "sender": "them", "time": "06:41 PM", "text": "I'll always be cheering for you. Take care of yourself, okay?" }
+        ]
+      },
+
+      {
+        "id": "unknown-aoi",
+        "name": "Unknown Number",
         "icon": "?",
         "avatarImage": "",
-        "snippet": "",
-        "date": "",
+        "snippet": "ok!! as classmates ☆ see you monday, Rin-kun",
+        "date": "7/25/18",
         "unread": 0,
-        "messages": []
+        "messages": [
+          { "sender": "them", "time": "06:33 PM", "date": "June 22, 2018", "text": "hiii Rin-kun!! it's Aoi ☆ got your number from the class group list! today was so fun, the arcade misses us already!!" },
+          { "sender": "you", "time": "07:10 PM", "text": "Who said you could text me." },
+          { "sender": "you", "time": "07:12 PM", "text": "It was fine." },
+          { "sender": "them", "time": "07:13 PM", "text": "he said it was FINE!!! screenshotting this. framing it. hanging it above my desk ☆" },
+
+          { "sender": "them", "time": "08:21 PM", "date": "June 26, 2018", "text": "pop quiz!! what's your type? asking for. um. a survey. a very official class survey" },
+          { "sender": "you", "time": "09:47 PM", "text": "Not answering that." },
+          { "sender": "them", "time": "09:48 PM", "text": "so cold!! that's okay, cold is kind of your charm 💙" },
+          { "sender": "you", "time": "09:50 PM", "text": "Don't text me during training hours." },
+          { "sender": "them", "time": "09:51 PM", "text": "it's 9 PM!! who trains at 9 PM!!" },
+          { "sender": "you", "time": "09:53 PM", "text": "I do." },
+
+          { "sender": "them", "time": "05:02 PM", "date": "July 5, 2018", "text": "weekend plans!! there's a new crepe place near the station. you're coming right? pleaseeee, I'll owe you one ☆" },
+          { "sender": "you", "time": "05:40 PM", "text": "Fine. One hour. I have drills after." },
+          { "sender": "them", "time": "05:40 PM", "text": "IT'S A DATE ☆☆☆" },
+          { "sender": "you", "time": "05:42 PM", "text": "It's not a date." },
+          { "sender": "them", "time": "05:43 PM", "text": "(it's a date)" },
+
+          { "sender": "them", "time": "07:55 PM", "date": "July 14, 2018", "text": "you SMILED today at the arcade. I saw it with my own two eyes. official counter: 1 smile" },
+          { "sender": "you", "time": "08:30 PM", "text": "The claw machine ate your coins six times in a row. Anyone would smile at that." },
+          { "sender": "them", "time": "08:31 PM", "text": "so you ADMIT there was a smile!!" },
+
+          { "sender": "them", "time": "03:15 PM", "date": "July 20, 2018", "text": "I made cookies for after your practice!! the heart-shaped ones are an accident. all twelve of them. accidentally. became hearts" },
+          { "sender": "you", "time": "06:05 PM", "text": "...Thanks. You didn't have to." },
+          { "sender": "them", "time": "06:06 PM", "text": "I wanted to!! that's the whole point, silly" },
+
+          { "sender": "them", "time": "09:40 PM", "date": "July 25, 2018", "text": "hey... about today at the lockers. I'm sorry I cried. you were honest with me, and that's more than most people ever are." },
+          { "sender": "them", "time": "09:44 PM", "text": "can we still hang out sometimes? as classmates? the arcade's boring alone" },
+          { "sender": "you", "time": "10:28 PM", "text": "As classmates." },
+          { "sender": "them", "time": "10:29 PM", "text": "ok!! as classmates ☆ see you monday, Rin-kun" }
+        ]
       }
     ]
   }
@@ -420,7 +951,7 @@
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0;
   }
 
   .message-group {
@@ -440,7 +971,13 @@
   .message {
     display: flex;
     flex-direction: column;
-    margin: 4px 0;
+    margin: 0;
+    margin-top: 14px;
+  }
+
+  /* Consecutive messages from the same sender at the same time stack tightly */
+  .message.grouped {
+    margin-top: 3px;
   }
 
   .message.sent {

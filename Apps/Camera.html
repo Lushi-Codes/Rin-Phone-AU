@@ -79,9 +79,6 @@
   .camera-flip-btn:active {
     background: rgba(100,150,200,0.6);
   }
-  .selfie-photo, .video-file {
-    display: none;
-  }
 
   /* Video Gallery */
   .video-gallery-overlay {
@@ -158,34 +155,55 @@
 
 </style>
 
-<!-- Videos — add more by copying a .video-file block.
-     data-url is the direct link to the MP4 video file. -->
-<div class="video-file" data-url="./Gallery/Videos/1.mp4"></div>
-<div class="video-file" data-url="./Gallery/Videos/5.mp4"></div>
-<div class="video-file" data-url="./Gallery/Videos/3.mp4"></div>
-<div class="video-file" data-url="./Gallery/Videos/6.mp4"></div>
-
-<!-- Selfie photos — add more by copying a .selfie-photo block.
-     data-url is the image URL to display in selfie mode. -->
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/7d/6f/b8/7d6fb8a64279b88a74ef93bc967eadaa.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/05/3d/e4/053de42328f91f8c0ae176bf8c1bec2e.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/71/6e/34/716e346d4b84d4c6742dc5e87f667087.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/ce/33/6f/ce336ffec86ec595ac118a8022f10188.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/f1/f7/bd/f1f7bda8e5ff48300a75e664ae09a9ac.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/1200x/b2/43/e4/b243e410f1fb4a8afd0425b44c1552d4.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/7a/88/a2/7a88a257bbd8dfed0ed8dc4803df50fd.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/55/b8/48/55b848e963a25e915c9c4da107905435.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/d3/08/5f/d3085fbd3642dc6144754824bd55d640.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/ed/07/79/ed0779f51d56885e2e9ac2092f53feca.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/61/77/0c/61770c148c9d6bc31a3f40ddbcdc2c3a.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/50/de/17/50de17ac1b97705119dcd207a75df6b9.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/fa/8f/ab/fa8fab4b4ee4fb1d3f8844fae76dc64f.jpg"></div><div class="selfie-photo" data-url="https://i.pinimg.com/1200x/3f/37/ec/3f37ecc1e7af875e6321d278a81934e4.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/2d/99/72/2d9972d1d23376de4b9dd030bc940652.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/dc/e4/65/dce46574b903e7add6b7aa404cc55ebd.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/aa/76/96/aa769646e7f1b7a734f81d37f4a83500.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/1200x/f3/be/64/f3be6429bd57f87337f8bb9c38d5b5fb.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/a6/7a/18/a67a180f4e6195286846ab5595e39379.jpg"></div>
-<div class="selfie-photo" data-url="https://i.pinimg.com/736x/42/ee/d4/42eed4fee4e08ae2df92d5a108b1b520.jpg"></div>
+<!-- ==================================================================
+     Camera data stored as JSON for script.js to load.
+       selfies - image URLs shown in selfie mode (shuffled per capture)
+       videos  - direct links to MP4 files for the locked video gallery
+     NOTE: JSON does not allow comments or trailing commas.
+     ================================================================== -->
+<script type="application/json" id="camera-data">
+{
+  "selfies": [
+    "https://i.pinimg.com/736x/7d/6f/b8/7d6fb8a64279b88a74ef93bc967eadaa.jpg",
+    "https://i.pinimg.com/736x/05/3d/e4/053de42328f91f8c0ae176bf8c1bec2e.jpg",
+    "https://i.pinimg.com/736x/71/6e/34/716e346d4b84d4c6742dc5e87f667087.jpg",
+    "https://i.pinimg.com/736x/ce/33/6f/ce336ffec86ec595ac118a8022f10188.jpg",
+    "https://i.pinimg.com/736x/f1/f7/bd/f1f7bda8e5ff48300a75e664ae09a9ac.jpg",
+    "https://i.pinimg.com/1200x/b2/43/e4/b243e410f1fb4a8afd0425b44c1552d4.jpg",
+    "https://i.pinimg.com/736x/7a/88/a2/7a88a257bbd8dfed0ed8dc4803df50fd.jpg",
+    "https://i.pinimg.com/736x/55/b8/48/55b848e963a25e915c9c4da107905435.jpg",
+    "https://i.pinimg.com/736x/d3/08/5f/d3085fbd3642dc6144754824bd55d640.jpg",
+    "https://i.pinimg.com/736x/ed/07/79/ed0779f51d56885e2e9ac2092f53feca.jpg",
+    "https://i.pinimg.com/736x/61/77/0c/61770c148c9d6bc31a3f40ddbcdc2c3a.jpg",
+    "https://i.pinimg.com/736x/50/de/17/50de17ac1b97705119dcd207a75df6b9.jpg",
+    "https://i.pinimg.com/736x/fa/8f/ab/fa8fab4b4ee4fb1d3f8844fae76dc64f.jpg",
+    "https://i.pinimg.com/1200x/3f/37/ec/3f37ecc1e7af875e6321d278a81934e4.jpg",
+    "https://i.pinimg.com/736x/2d/99/72/2d9972d1d23376de4b9dd030bc940652.jpg",
+    "https://i.pinimg.com/736x/dc/e4/65/dce46574b903e7add6b7aa404cc55ebd.jpg",
+    "https://i.pinimg.com/736x/aa/76/96/aa769646e7f1b7a734f81d37f4a83500.jpg",
+    "https://i.pinimg.com/1200x/f3/be/64/f3be6429bd57f87337f8bb9c38d5b5fb.jpg",
+    "https://i.pinimg.com/736x/a6/7a/18/a67a180f4e6195286846ab5595e39379.jpg",
+    "https://i.pinimg.com/736x/42/ee/d4/42eed4fee4e08ae2df92d5a108b1b520.jpg",
+    "https://i.pinimg.com/736x/73/ff/20/73ff20d8574efcf2e55f896cafe4c901.jpg",
+    "https://i.pinimg.com/736x/d2/4b/b1/d24bb1a9577b83791acae573bbf64716.jpg",
+    "https://i.pinimg.com/736x/b1/98/6c/b1986cfbc6eaff7aa2ec715e6094bee9.jpg",
+    "https://i.pinimg.com/736x/a8/f9/a8/a8f9a81e4e4860ea37da73c5a70a82fc.jpg",
+    "https://i.pinimg.com/1200x/fa/88/90/fa88903d4a4216c69054f48522c8774e.jpg",
+    "https://i.pinimg.com/736x/23/21/7f/23217fa0a316a4514b53d4fb811a8c74.jpg",
+    "https://i.pinimg.com/736x/4e/5b/1d/4e5b1d109f1c6e07b71b79df4cb5a32e.jpg",
+    "https://i.pinimg.com/736x/c8/28/0b/c8280b6ff4654d30c46cd2adac9ca344.jpg",
+    "https://i.pinimg.com/736x/f6/7a/32/f67a3299186b544d498d1c2944a2a59a.jpg",
+    "https://i.pinimg.com/736x/e5/87/1f/e5871f1cb09e478eefd9102187c67ce7.jpg",
+    "https://i.pinimg.com/736x/3d/14/8d/3d148d3088e6da03455cb2ddbf069b1a.jpg"
+  ],
+  "videos": [
+    "./Gallery/Videos/1.mp4",
+    "./Gallery/Videos/5.mp4",
+    "./Gallery/Videos/3.mp4",
+    "./Gallery/Videos/6.mp4"
+  ]
+}
+</script>
 
 <div class="camera-feed-container">
   <div class="camera-mode-label" id="cameraModeLabel">Selfie Mode</div>
@@ -217,14 +235,6 @@
     </div>
   </div>
 
-  <!-- PIN Unlock Overlay - Hidden (unlock via calculator 543) -->
-  <div class="pin-unlock-overlay" id="pinUnlockOverlay" style="display: none !important;">
-    <div class="pin-input-group">
-      <div class="pin-input-label">Enter PIN</div>
-      <div class="pin-input-display" id="pinDisplay">●●●</div>
-      <div class="pin-keypad" id="pinKeypad"></div>
-    </div>
-  </div>
 </div>
 
 

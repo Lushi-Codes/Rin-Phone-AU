@@ -1682,6 +1682,10 @@
         // parsed into this object and rendered once the fragment loads.
         let messageThreads = {};
 
+        // Remember scroll position per thread: first open starts at the top
+        // (no story spoilers), returning to a thread resumes where they left off.
+        const threadScrollPositions = {};
+
         function loadMessageThreadsFromFragment() {
           const container = document.querySelector('#app-messages .message-list');
           if (!container) return;
@@ -1739,7 +1743,7 @@
           });
         }
 
-        function displayThreadMessages(id) {
+        function displayThreadMessages(id, scrollToBottom = false) {
           const container = document.getElementById('messagesContainer');
           const thread = messageThreads[id];
           if (!container || !thread) return;
@@ -1747,9 +1751,10 @@
           container.innerHTML = '';
           let previousDate = null;
 
-          thread.messages.forEach((msg) => {
+          thread.messages.forEach((msg, i) => {
             // If date changed, show date divider
-            if (msg.date && msg.date !== previousDate) {
+            const startsNewDay = msg.date && msg.date !== previousDate;
+            if (startsNewDay) {
               const dateHeader = document.createElement('div');
               dateHeader.className = 'message-timestamp';
               dateHeader.textContent = msg.date;
@@ -1757,8 +1762,20 @@
               previousDate = msg.date;
             }
 
+            // Group consecutive messages from the same sender with the same
+            // time: bubbles stack tightly and the time shows once at the bottom.
+            const prev = thread.messages[i - 1];
+            const grouped = !startsNewDay && prev &&
+              prev.sender === msg.sender && prev.time === msg.time;
+
+            const next = thread.messages[i + 1];
+            const nextStartsNewDay = next && next.date && next.date !== previousDate;
+            const lastInGroup = !next || nextStartsNewDay ||
+              next.sender !== msg.sender || next.time !== msg.time;
+
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${msg.sender === 'you' ? 'sent' : 'received'}`;
+            if (grouped) messageDiv.classList.add('grouped');
 
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
@@ -1766,7 +1783,7 @@
 
             messageDiv.appendChild(bubble);
 
-            if (msg.time) {
+            if (msg.time && lastInGroup) {
               const time = document.createElement('div');
               time.className = 'message-time';
               time.textContent = msg.time;
@@ -1776,7 +1793,13 @@
             container.appendChild(messageDiv);
           });
 
-          container.scrollTop = container.scrollHeight;
+          // Open at the top so the story reads chronologically without spoilers;
+          // resume the saved position when returning, jump to the bottom on send.
+          if (scrollToBottom) {
+            container.scrollTop = container.scrollHeight;
+          } else {
+            container.scrollTop = threadScrollPositions[id] || 0;
+          }
         }
 
         function sendThreadMessage(id, text) {
@@ -1796,7 +1819,7 @@
             date: dateStr
           });
 
-          displayThreadMessages(id);
+          displayThreadMessages(id, true);
         }
 
         window.currentThreadId = null;
@@ -1838,6 +1861,16 @@
               if (e.key === 'Enter' && window.currentThreadId) {
                 sendThreadMessage(window.currentThreadId, messageInput.value);
                 messageInput.value = '';
+              }
+            });
+          }
+
+          // Track reading position so reopening a thread resumes where they left off
+          const messagesContainer = document.getElementById('messagesContainer');
+          if (messagesContainer) {
+            messagesContainer.addEventListener('scroll', () => {
+              if (window.currentThreadId) {
+                threadScrollPositions[window.currentThreadId] = messagesContainer.scrollTop;
               }
             });
           }
@@ -2358,12 +2391,21 @@
         let shufflePosition = 0;
         let previousPhotoUrl = '';
 
+        // Camera data (selfie photos + gallery videos) lives in Apps/Camera.html
+        // as a JSON <script id="camera-data"> block.
+        function loadCameraData() {
+          const scriptEl = document.querySelector('#app-camera .screen-body script[type="application/json"]#camera-data');
+          if (!scriptEl) return {};
+          try {
+            return JSON.parse(scriptEl.textContent);
+          } catch (err) {
+            console.error('Error loading camera data:', err);
+            return {};
+          }
+        }
+
         function loadSelfiePhotos() {
-          const container = document.querySelector('#app-camera .screen-body');
-          if (!container) return;
-          selfiePhotos = Array.from(container.querySelectorAll('.selfie-photo'))
-            .map(el => el.dataset.url)
-            .filter(url => url && url.trim());
+          selfiePhotos = (loadCameraData().selfies || []).filter(url => url && url.trim());
           shufflePhotos();
         }
 
@@ -2567,11 +2609,7 @@
         window.videoGalleryUnlocked = false;
 
         function loadVideoFiles() {
-          const container = document.querySelector('#app-camera .screen-body');
-          if (!container) return;
-          videoFiles = Array.from(container.querySelectorAll('.video-file'))
-            .map(el => el.dataset.url)
-            .filter(url => url && url.trim());
+          videoFiles = (loadCameraData().videos || []).filter(url => url && url.trim());
         }
 
         function setupVideoGallery() {
