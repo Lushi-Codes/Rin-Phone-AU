@@ -700,9 +700,9 @@
                   expr = '';
                   return;
                 }
-                if (expr === '090902') {
+                if (expr === '0400') {
                   window.whatIfUnlocked = true;
-                  window.unlockedCode090902 = true;
+                  window.unlockedCode0400 = true;
                   showNotifications(['music', 'gallery', 'notes']);
                   if (window.loadSecretNotes) window.loadSecretNotes();
                   set('🔪');
@@ -1705,7 +1705,22 @@
           const threadView = container.querySelector('#conversationThread');
           container.querySelectorAll('.message-item').forEach(el => el.remove());
 
-          (data.conversations || []).forEach(conv => {
+          // Sort conversations by latest activity (newest first)
+          const sortedConvs = [...(data.conversations || [])].sort((a, b) => {
+            const dateA = a.date || '';
+            const dateB = b.date || '';
+            // "Today" and "Yesterday" get highest priority (sort to top)
+            const getDateValue = (dateStr) => {
+              if (dateStr === 'Today') return Number.MAX_SAFE_INTEGER;
+              if (dateStr === 'Yesterday') return Number.MAX_SAFE_INTEGER - 1;
+              // Parse dates like "3/20/19" in descending order
+              const parsed = new Date(dateStr).getTime();
+              return isNaN(parsed) ? 0 : parsed;
+            };
+            return getDateValue(dateB) - getDateValue(dateA); // Descending (newest first)
+          });
+
+          sortedConvs.forEach(conv => {
             const id = conv.id;
             if (!id) return;
             const name = conv.name || id;
@@ -1751,6 +1766,7 @@
           container.innerHTML = '';
           let previousDate = null;
 
+          // Display messages in chronological order (oldest first) - no spoilers
           thread.messages.forEach((msg, i) => {
             // If date changed, show date divider
             const startsNewDay = msg.date && msg.date !== previousDate;
@@ -1762,8 +1778,7 @@
               previousDate = msg.date;
             }
 
-            // Group consecutive messages from the same sender with the same
-            // time: bubbles stack tightly and the time shows once at the bottom.
+            // Group consecutive messages from the same sender with the same time
             const prev = thread.messages[i - 1];
             const grouped = !startsNewDay && prev &&
               prev.sender === msg.sender && prev.time === msg.time;
@@ -1944,12 +1959,34 @@
 
         // Make dialNumber globally available
         window.dialNumber = function(number) {
+          // Ensure phoneRecents is loaded
+          if (!window.phoneRecents || window.phoneRecents.length === 0) {
+            loadPhoneRecentsFromFragment();
+          }
+
+          // Check if this number matches a contact with dialogue options
+          if (Array.isArray(window.phoneRecents) && window.phoneRecents.length > 0) {
+            const dialogueCall = window.phoneRecents.find(call =>
+              call.dialogue && call.dialogue.length > 0 &&
+              call.number && number && call.number.includes(number.replace(/[^\d]/g, ''))
+            );
+
+            if (dialogueCall) {
+              window.openDialogueModal(dialogueCall.index);
+              return;
+            }
+          }
           goToKeypadWithNumber(number);
         };
 
         // Recents call data lives in Apps/Calls.html as hidden .recent-call
         // blocks — parsed into this array once the fragment loads.
         let phoneRecents = [];
+
+        // ==================== DIALOGUE SYSTEM ====================
+        window.callDialogueCooldowns = {};
+        window.currentDialogueAudio = null;
+        window.currentDialogueModal = null;
 
         function loadPhoneRecentsFromFragment() {
           const scriptEl = document.querySelector('#phoneRecents .recents-list script[type="application/json"]#call-data');
@@ -1965,15 +2002,100 @@
                 type: call.type || 'incoming',
                 callCount: call.count || 1,
                 audio: call.audio || '',
+                dialogue: call.dialogue || null,
                 fullDate,
                 date: fullDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                 index
               };
             });
+            window.phoneRecents = phoneRecents;
           } catch (err) {
             console.error('Error loading calls:', err);
           }
         }
+        window.loadPhoneRecentsFromFragment = loadPhoneRecentsFromFragment;
+
+        window.openDialogueModal = function(callIndex) {
+          const call = window.phoneRecents ? window.phoneRecents[callIndex] : null;
+          if (!call || !call.dialogue) return;
+
+          const cooldownKey = call.name;
+          if (callDialogueCooldowns[cooldownKey]) {
+            const remaining = Math.ceil((callDialogueCooldowns[cooldownKey] - Date.now()) / 1000);
+            if (remaining > 0) {
+              showToast(`Call available in ${remaining}s`, 1200);
+              return;
+            }
+          }
+
+          const modal = document.createElement('div');
+          modal.id = 'dialogueModal';
+          modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:#111;display:flex;flex-direction:column;z-index:10000;';
+
+          const header = document.createElement('div');
+          header.style.cssText = 'padding:16px;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center;';
+          header.innerHTML = `<div style="color:#fff;font-weight:600;">${call.name}</div><div style="color:#aaa;font-size:14px;">00:07</div>`;
+
+          const optionsContainer = document.createElement('div');
+          optionsContainer.id = 'dialogueOptions';
+          optionsContainer.style.cssText = 'flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;';
+
+          call.dialogue.forEach((opt, i) => {
+            const optionBox = document.createElement('div');
+            optionBox.style.cssText = 'padding:16px;background:#1a1a1a;border:1px solid #333;border-radius:8px;color:#fff;cursor:pointer;';
+            optionBox.textContent = `${i + 1}. ${opt.option}`;
+            optionBox.onmouseover = () => optionBox.style.borderColor = '#555';
+            optionBox.onmouseout = () => optionBox.style.borderColor = '#333';
+            optionBox.onclick = () => selectDialogueOption(callIndex, i, optionsContainer);
+            optionsContainer.appendChild(optionBox);
+          });
+
+          const controls = document.createElement('div');
+          controls.id = 'dialogueControls';
+          controls.style.cssText = 'padding:16px;border-top:1px solid #333;display:none;gap:12px;';
+          controls.innerHTML = `<button onclick="replayDialogueAudio()" style="flex:1;padding:12px;background:#1a1a1a;color:#fff;border:1px solid #333;border-radius:8px;cursor:pointer;">⟲ Replay Audio</button><button onclick="endDialogueCall('${call.name}')" style="flex:1;padding:12px;background:#ff3333;color:#fff;border:none;border-radius:8px;cursor:pointer;">🔴 End Call</button>`;
+
+          modal.appendChild(header);
+          modal.appendChild(optionsContainer);
+          modal.appendChild(controls);
+          document.body.appendChild(modal);
+          currentDialogueModal = { modal, call, callIndex };
+        };
+
+        window.selectDialogueOption = function(callIndex, optionIndex, container) {
+          const call = phoneRecents[callIndex];
+          const option = call.dialogue[optionIndex];
+
+          if (option.audio) {
+            if (currentDialogueAudio) currentDialogueAudio.pause();
+            currentDialogueAudio = new Audio(option.audio);
+            currentDialogueAudio.play().catch(() => showToast('Unable to play audio', 1200));
+          }
+
+          container.innerHTML = '';
+          const controls = document.getElementById('dialogueControls');
+          if (controls) controls.style.display = 'flex';
+        };
+
+        window.replayDialogueAudio = function() {
+          if (currentDialogueAudio) {
+            currentDialogueAudio.currentTime = 0;
+            currentDialogueAudio.play();
+          }
+        };
+
+        window.endDialogueCall = function(contactName) {
+          if (currentDialogueModal) {
+            currentDialogueModal.modal.remove();
+            currentDialogueModal = null;
+          }
+          if (currentDialogueAudio) {
+            currentDialogueAudio.pause();
+            currentDialogueAudio = null;
+          }
+          callDialogueCooldowns[contactName] = Date.now() + 60000;
+          initializeRecents();
+        };
 
         window.playCallRecording = function(index) {
           const call = phoneRecents[index];
@@ -2015,16 +2137,27 @@
               const typeIcon = call.type === 'missed' ? '↙️' : call.type === 'outgoing' ? '↗️' : '↙️';
               const timeFormatted = call.fullDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
               const callCountText = call.callCount > 1 ? ` (${call.callCount})` : '';
-              const isClickable = call.type === 'missed';
-              const onclickAttr = isClickable ? `onclick="playCallRecording(${call.index})"` : '';
+              const hasDialogue = call.dialogue && call.dialogue.length > 0;
+              const cooldownKey = call.name;
+              const cooldownActive = callDialogueCooldowns[cooldownKey];
+              const isClickable = call.type === 'missed' || (hasDialogue && (!cooldownActive || cooldownActive < Date.now()));
+              const onclickAttr = isClickable ? (hasDialogue ? `onclick="openDialogueModal(${call.index})"` : `onclick="playCallRecording(${call.index})"`) : '';
               const cursorStyle = isClickable ? 'cursor: pointer;' : 'cursor: default; opacity: 0.7;';
+
+              let subtitle = call.number || '';
+              if (cooldownActive && cooldownActive > Date.now()) {
+                const remaining = Math.ceil((cooldownActive - Date.now()) / 1000);
+                subtitle = `Call available in ${remaining}s`;
+              } else if (hasDialogue) {
+                subtitle = 'Dialogue available';
+              }
 
               html += `
                 <div ${onclickAttr} style="padding: 12px; background: #1a1a1a; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; ${cursorStyle}">
                   <div style="font-size: 18px;">${typeIcon}</div>
                   <div style="flex: 1;">
                     <div style="color: #fff; font-weight: 600;">${call.name}${callCountText}</div>
-                    ${call.number ? `<div style="font-size: 12px; color: #aaa;">${call.number}</div>` : ''}
+                    <div style="font-size: 12px; color: #aaa;">${subtitle}</div>
                   </div>
                   <div style="text-align: right; font-size: 12px; color: #aaa;">${timeFormatted}</div>
                 </div>
