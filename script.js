@@ -1966,17 +1966,120 @@
 
           // Check if this number matches a contact with dialogue options
           if (Array.isArray(window.phoneRecents) && window.phoneRecents.length > 0) {
+            // Get the contact name from the phoneContacts array by matching the number
+            const contact = phoneContacts.find(c => c.number === number);
+            const contactName = contact ? contact.name : '';
+
             const dialogueCall = window.phoneRecents.find(call =>
               call.dialogue && call.dialogue.length > 0 &&
-              call.number && number && call.number.includes(number.replace(/[^\d]/g, ''))
+              call.name && contactName && call.name.toLowerCase() === contactName.toLowerCase()
             );
 
             if (dialogueCall) {
-              window.openDialogueModal(dialogueCall.index);
+              showDialogueCallScreen(dialogueCall, contactName);
               return;
             }
           }
-          goToKeypadWithNumber(number);
+
+          // Not a dialogue contact - make regular call
+          const norm = normalizeNumber(number);
+          if (window.showToast) showToast('Calling ' + number, 1200);
+          window.location.href = 'tel:' + norm;
+        };
+
+        window.showDialogueCallScreen = function(call, contactName) {
+          const phoneApp = document.getElementById('app-phone');
+          if (!phoneApp) return;
+
+          const callScreen = document.createElement('div');
+          callScreen.id = 'dialogueCallScreen';
+          callScreen.style.cssText = 'display:flex;flex-direction:column;height:100%;background:#333;';
+
+          // Call header with name and timer
+          const header = document.createElement('div');
+          header.style.cssText = 'flex:0;padding:32px 16px;text-align:center;border-bottom:1px solid #444;';
+
+          let seconds = 0;
+          const timerElement = document.createElement('div');
+          timerElement.style.cssText = 'color:#aaa;font-size:14px;margin-bottom:8px;';
+          timerElement.textContent = '00:00';
+
+          const timerInterval = setInterval(() => {
+            seconds++;
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            timerElement.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+          }, 1000);
+
+          const nameElement = document.createElement('div');
+          nameElement.style.cssText = 'color:#fff;font-size:24px;font-weight:600;';
+          nameElement.textContent = contactName;
+
+          header.appendChild(timerElement);
+          header.appendChild(nameElement);
+
+          // Options container
+          const optionsContainer = document.createElement('div');
+          optionsContainer.id = 'dialogueOptionsContainer';
+          optionsContainer.style.cssText = 'flex:1;padding:24px 16px;display:flex;flex-direction:column;gap:12px;justify-content:center;';
+
+          call.dialogue.forEach((opt, i) => {
+            const optionBox = document.createElement('div');
+            optionBox.style.cssText = 'padding:16px;background:#1a1a1a;border:1px solid #444;border-radius:8px;color:#fff;cursor:pointer;text-align:center;transition:border-color 0.2s;';
+            optionBox.textContent = opt.option;
+            optionBox.onmouseover = () => optionBox.style.borderColor = '#666';
+            optionBox.onmouseout = () => optionBox.style.borderColor = '#444';
+            optionBox.onclick = () => selectDialogueOptionInCall(call, i, optionsContainer, timerInterval);
+            optionsContainer.appendChild(optionBox);
+          });
+
+          // Controls (hidden initially)
+          const controls = document.createElement('div');
+          controls.id = 'dialogueCallControls';
+          controls.style.cssText = 'flex:0;padding:24px 16px;display:none;flex-direction:row;gap:16px;justify-content:center;';
+          controls.innerHTML = `<button onclick="replayDialogueAudio()" style="width:80px;height:80px;border-radius:50%;background:#1a1a1a;color:#fff;border:1px solid #444;cursor:pointer;font-size:32px;display:flex;align-items:center;justify-content:center;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#666'" onmouseout="this.style.borderColor='#444'">⟲</button><button onclick="endDialogueCallInScreen()" style="width:80px;height:80px;border-radius:50%;background:#ff3333;color:#fff;border:none;cursor:pointer;font-size:32px;display:flex;align-items:center;justify-content:center;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">🔴</button>`;
+
+          callScreen.appendChild(header);
+          callScreen.appendChild(optionsContainer);
+          callScreen.appendChild(controls);
+
+          // Hide tabs and replace entire phone content
+          const tabsContainer = phoneApp.querySelector('.phone-tabs');
+          const appScreens = phoneApp.querySelectorAll('.app-screen');
+          if (tabsContainer) tabsContainer.style.display = 'none';
+          appScreens.forEach(screen => screen.style.display = 'none');
+
+          phoneApp.appendChild(callScreen);
+          currentDialogueModal = { callScreen, call, optionsContainer, controls, timerInterval, tabsContainer, appScreens, phoneApp };
+        };
+
+        window.selectDialogueOptionInCall = function(call, optionIndex, optionsContainer, timerInterval) {
+          const option = call.dialogue[optionIndex];
+
+          if (option.audio) {
+            if (currentDialogueAudio) currentDialogueAudio.pause();
+            currentDialogueAudio = new Audio(option.audio);
+            currentDialogueAudio.play().catch(() => showToast('Unable to play audio', 1200));
+          }
+
+          optionsContainer.style.display = 'none';
+          const controls = document.getElementById('dialogueCallControls');
+          if (controls) controls.style.display = 'flex';
+        };
+
+        window.endDialogueCallInScreen = function() {
+          if (currentDialogueModal) {
+            const { callScreen, timerInterval, tabsContainer, appScreens } = currentDialogueModal;
+            if (timerInterval) clearInterval(timerInterval);
+            if (callScreen) callScreen.remove();
+            if (tabsContainer) tabsContainer.style.display = '';
+            appScreens.forEach(screen => screen.style.display = '');
+            currentDialogueModal = null;
+          }
+          if (currentDialogueAudio) {
+            currentDialogueAudio.pause();
+            currentDialogueAudio = null;
+          }
         };
 
         // Recents call data lives in Apps/Calls.html as hidden .recent-call
@@ -2043,7 +2146,7 @@
           call.dialogue.forEach((opt, i) => {
             const optionBox = document.createElement('div');
             optionBox.style.cssText = 'padding:16px;background:#1a1a1a;border:1px solid #333;border-radius:8px;color:#fff;cursor:pointer;';
-            optionBox.textContent = `${i + 1}. ${opt.option}`;
+            optionBox.textContent = opt.option;
             optionBox.onmouseover = () => optionBox.style.borderColor = '#555';
             optionBox.onmouseout = () => optionBox.style.borderColor = '#333';
             optionBox.onclick = () => selectDialogueOption(callIndex, i, optionsContainer);
@@ -2052,8 +2155,8 @@
 
           const controls = document.createElement('div');
           controls.id = 'dialogueControls';
-          controls.style.cssText = 'padding:16px;border-top:1px solid #333;display:none;gap:12px;';
-          controls.innerHTML = `<button onclick="replayDialogueAudio()" style="flex:1;padding:12px;background:#1a1a1a;color:#fff;border:1px solid #333;border-radius:8px;cursor:pointer;">⟲ Replay Audio</button><button onclick="endDialogueCall('${call.name}')" style="flex:1;padding:12px;background:#ff3333;color:#fff;border:none;border-radius:8px;cursor:pointer;">🔴 End Call</button>`;
+          controls.style.cssText = 'padding:16px;border-top:1px solid #333;display:none;flex-direction:row;gap:24px;align-items:center;justify-content:center;';
+          controls.innerHTML = `<button onclick="replayDialogueAudio()" style="width:64px;height:64px;border-radius:50%;background:#1a1a1a;color:#fff;border:1px solid #333;cursor:pointer;font-size:28px;display:flex;align-items:center;justify-content:center;">⟲</button><button onclick="endDialogueCall('${call.name}')" style="width:64px;height:64px;border-radius:50%;background:#ff3333;color:#fff;border:none;cursor:pointer;font-size:28px;display:flex;align-items:center;justify-content:center;">🔴</button>`;
 
           modal.appendChild(header);
           modal.appendChild(optionsContainer);
@@ -2063,7 +2166,8 @@
         };
 
         window.selectDialogueOption = function(callIndex, optionIndex, container) {
-          const call = phoneRecents[callIndex];
+          const call = window.phoneRecents ? window.phoneRecents[callIndex] : null;
+          if (!call) return;
           const option = call.dialogue[optionIndex];
 
           if (option.audio) {
@@ -2072,9 +2176,11 @@
             currentDialogueAudio.play().catch(() => showToast('Unable to play audio', 1200));
           }
 
-          container.innerHTML = '';
+          container.style.display = 'none';
           const controls = document.getElementById('dialogueControls');
-          if (controls) controls.style.display = 'flex';
+          if (controls) {
+            controls.style.display = 'flex';
+          }
         };
 
         window.replayDialogueAudio = function() {
