@@ -106,8 +106,8 @@
 
   // fallback: if no element passed, attempt to find corresponding icon by data-app
   if (!el) {
-    const icon = document.querySelector('[data-app]');
-    if (icon && icon.classList && icon.classList.contains('locked')) {
+    el = document.querySelector(`[data-app="${appId}"]`);
+    if (el && el.classList && el.classList.contains('locked')) {
       showToast('App is locked');
       return;
     }
@@ -169,6 +169,16 @@
           if (appId === 'app-camera') {
             if (typeof closeCameraStream === 'function') {
               closeCameraStream();
+            }
+          }
+
+          // End dialogue call if closing phone app
+          if (appId === 'app-phone') {
+            if (typeof endDialogueCallInScreen === 'function') {
+              endDialogueCallInScreen();
+            }
+            if (typeof endDialogueCall === 'function') {
+              endDialogueCall('Mom');
             }
           }
 
@@ -331,7 +341,7 @@
 
         // Load contacts from Apps/Contacts.html and attach expand/action behavior
         document.addEventListener('DOMContentLoaded', () => {
-          const contactsList = document.getElementById('contactsList') || document.querySelector('.contacts-list');
+          const contactsList = document.getElementById('contactsList') || document.querySelector('.contacts-container') || document.querySelector('.contacts-list');
           if (!contactsList) return;
 
           // populate from fragment file (Apps/Contacts.html)
@@ -456,6 +466,7 @@
           const display = document.querySelector('#phoneKeypad .dial-display');
           if (display) display.value = norm;
         }
+        window.goToKeypadWithNumber = goToKeypadWithNumber;
 
         function goToMessageThreadForContact(name, icon) {
           openApp('app-messages');
@@ -527,7 +538,15 @@
             .then(r => { if (!r.ok) throw new Error('Failed to load ' + fileName); return r.text(); })
             .then(html => {
               console.log('Fragment loaded:', fileName);
-              container.innerHTML = html.trim();
+              // For Notes.html, filter to only public notes (exclude locked notes)
+              if (fileName === 'Apps/Notes.html') {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const publicNotes = Array.from(doc.querySelectorAll('.note-card')).map(el => el.outerHTML).join('');
+                container.innerHTML = publicNotes;
+              } else {
+                container.innerHTML = html.trim();
+              }
               console.log('Fragment inserted into DOM:', selector);
               return html;
             })
@@ -616,9 +635,42 @@
             if (callBtn) {
               callBtn.addEventListener('click', () => {
                 const n = (getDisplay() || '').trim();
-                if (!n) { showToast && showToast('Enter number', 1200); return; }
-                const norm = (n.startsWith('+') ? '+' : '') + n.replace(/[^\d]/g, '');
-                if (norm) window.location.href = 'tel:' + norm;
+                if (!n || n === '0') { showToast && showToast('Enter number', 1200); return; }
+
+                // Check for codes
+                const code = n.toUpperCase();
+                if (code === 'G43') {
+                  if (phoneHasBeenReset) {
+                    showToast('Code no longer works', 1500);
+                    setDisplay('0');
+                    return;
+                  }
+                  window.unlockedCode543 = true;
+                  window.niiChanUnlocked = true;
+                  window.videoGalleryUnlocked = true;
+                  showNotifications(['gallery', 'notes', 'messages', 'phone']);
+                  if (window.loadSecretNotes) window.loadSecretNotes();
+                  showToast('Nii-chan album unlocked! 🩷', 2000);
+                  setDisplay('0');
+                  return;
+                }
+                if (code === '0400') {
+                  if (phoneHasBeenReset) {
+                    showToast('Code no longer works', 1500);
+                    setDisplay('0');
+                    return;
+                  }
+                  window.whatIfUnlocked = true;
+                  window.unlockedCode0400 = true;
+                  showNotifications(['music', 'gallery', 'notes']);
+                  if (window.loadSecretNotes) window.loadSecretNotes();
+                  showToast('What if album unlocked! 🔪', 2000);
+                  setDisplay('0');
+                  return;
+                }
+
+                setDisplay('0');
+                window.dialNumber(n);
               });
             }
 
@@ -690,6 +742,11 @@
             function evaluate(){
               try{
                 if (expr === '543') {
+                  if (phoneHasBeenReset) {
+                    set('Error');
+                    expr = '';
+                    return;
+                  }
                   window.niiChanUnlocked = true;
                   window.videoGalleryUnlocked = true;
                   window.unlockedCode543 = true;
@@ -701,6 +758,11 @@
                   return;
                 }
                 if (expr === '0400') {
+                  if (phoneHasBeenReset) {
+                    set('Error');
+                    expr = '';
+                    return;
+                  }
                   window.whatIfUnlocked = true;
                   window.unlockedCode0400 = true;
                   showNotifications(['music', 'gallery', 'notes']);
@@ -1078,9 +1140,13 @@
 
         function setupMessagesList() {
           const msgList = document.querySelector('#app-messages .message-list');
-          if (!msgList) return;
+          if (!msgList) {
+            console.error('Message list not found');
+            return;
+          }
           window.__messagesStore = window.__messagesStore || {};
           const items = Array.from(msgList.querySelectorAll('.message-item'));
+          console.log('Found', items.length, 'message items');
           if (!items.length) {
             msgList.innerHTML = '<div class="loading">No messages available</div>';
             return;
@@ -1295,7 +1361,7 @@
         window.niiChanUnlocked = false;
         window.whatIfUnlocked = false;
         window.unlockedCode543 = false;
-        window.unlockedCode090902 = false;
+        window.unlockedCode0400 = false;
 
         function unlockNotes() {
           const password = document.getElementById('locked-notes-password').value;
@@ -1347,7 +1413,7 @@
                 .filter(el => {
                   const code = el.getAttribute('data-code');
                   if (code === '543') return window.unlockedCode543;
-                  if (code === '090902') return window.unlockedCode090902;
+                  if (code === '0400') return window.unlockedCode0400;
                   return false;
                 })
                 .map(el => ({
@@ -1688,14 +1754,21 @@
 
         function loadMessageThreadsFromFragment() {
           const container = document.querySelector('#app-messages .message-list');
-          if (!container) return;
+          if (!container) {
+            console.error('Message container not found');
+            return;
+          }
 
           const scriptEl = container.querySelector('script[type="application/json"]#message-data');
-          if (!scriptEl) return;
+          if (!scriptEl) {
+            console.error('Script element not found. Container HTML:', container.innerHTML.substring(0, 200));
+            return;
+          }
 
           let data;
           try {
             data = JSON.parse(scriptEl.textContent);
+            console.log('Messages loaded:', data.conversations.length, 'conversations');
           } catch (err) {
             console.error('Error loading messages:', err);
             return;
@@ -1756,6 +1829,7 @@
             if (threadView) container.insertBefore(item, threadView);
             else container.appendChild(item);
           });
+          console.log('Created', sortedConvs.length, 'message items in DOM');
         }
 
         function displayThreadMessages(id, scrollToBottom = false) {
@@ -1935,6 +2009,24 @@
           { name: 'Shitty Aniki', number: '+34 698 07 41 81', avatar: 'S', color: '#834655' }
         ];
 
+        // Track app open time for 5-minute delay
+        const appOpenTime = Date.now();
+
+        // Initialize ending modal after 3 minutes
+        setTimeout(() => {
+          // Create "End Story" button in instructions panel
+          const instructionsContent = document.querySelector('.instructions-content');
+          if (instructionsContent) {
+            const endButton = document.createElement('button');
+            endButton.textContent = 'End Story';
+            endButton.style.cssText = 'background: #00a896; color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 20px; width: 100%; font-size: 14px; transition: opacity 0.3s;';
+            endButton.onmouseover = () => endButton.style.opacity = '0.8';
+            endButton.onmouseout = () => endButton.style.opacity = '1';
+            endButton.onclick = showEndingModal;
+            instructionsContent.appendChild(endButton);
+          }
+        }, 3 * 60 * 1000);
+
         function initializePhoneContacts() {
           const contactsContainer = document.getElementById('phoneContacts');
           if (!contactsContainer) return;
@@ -1950,14 +2042,14 @@
                 <div style="font-weight: 600; color: #fff;">${contact.name}</div>
                 <div style="font-size: 12px; color: #aaa;">${contact.number}</div>
               </div>
-              <button onclick="dialNumber('${contact.number}')" style="background: none; border: none; color: #00a896; font-size: 18px; cursor: pointer;">📞</button>
+              <button onclick="goToKeypadWithNumber('${contact.number}')" style="background: none; border: none; color: #00a896; font-size: 18px; cursor: pointer;">📞</button>
             `;
             contactsContainer.appendChild(contactEl);
           });
           contactsContainer.innerHTML += '</div>';
         }
 
-        // Make dialNumber globally available
+        // ==================== PHONE APP ====================
         window.dialNumber = function(number) {
           // Ensure phoneRecents is loaded
           if (!window.phoneRecents || window.phoneRecents.length === 0) {
@@ -1966,8 +2058,9 @@
 
           // Check if this number matches a contact with dialogue options
           if (Array.isArray(window.phoneRecents) && window.phoneRecents.length > 0) {
-            // Get the contact name from the phoneContacts array by matching the number
-            const contact = phoneContacts.find(c => c.number === number);
+            // Normalize numbers for comparison (remove all non-digits)
+            const normalizedInput = number.replace(/[^\d]/g, '');
+            const contact = phoneContacts.find(c => c.number.replace(/[^\d]/g, '') === normalizedInput);
             const contactName = contact ? contact.name : '';
 
             const dialogueCall = window.phoneRecents.find(call =>
@@ -1976,6 +2069,17 @@
             );
 
             if (dialogueCall) {
+              // Check 5-minute delay for Mom
+              if (contactName === 'Mom') {
+                const timeSinceOpen = Date.now() - appOpenTime;
+                const fiveMinutes = 5 * 60 * 1000;
+                if (timeSinceOpen < fiveMinutes) {
+                  const remaining = Math.ceil((fiveMinutes - timeSinceOpen) / 1000);
+                  showToast(`Mom will help in ${remaining}s`, 1200);
+                  return;
+                }
+              }
+
               showDialogueCallScreen(dialogueCall, contactName);
               return;
             }
@@ -1990,6 +2094,10 @@
         window.showDialogueCallScreen = function(call, contactName) {
           const phoneApp = document.getElementById('app-phone');
           if (!phoneApp) return;
+
+          // Clean up any existing dialogue screens
+          const existingScreen = document.getElementById('dialogueCallScreen');
+          if (existingScreen) existingScreen.remove();
 
           const callScreen = document.createElement('div');
           callScreen.id = 'dialogueCallScreen';
@@ -2029,7 +2137,9 @@
             optionBox.textContent = opt.option;
             optionBox.onmouseover = () => optionBox.style.borderColor = '#666';
             optionBox.onmouseout = () => optionBox.style.borderColor = '#444';
-            optionBox.onclick = () => selectDialogueOptionInCall(call, i, optionsContainer, timerInterval);
+            optionBox.addEventListener('click', () => {
+              selectDialogueOptionInCall(call, i, optionsContainer);
+            });
             optionsContainer.appendChild(optionBox);
           });
 
@@ -2043,17 +2153,48 @@
           callScreen.appendChild(optionsContainer);
           callScreen.appendChild(controls);
 
-          // Hide tabs and replace entire phone content
-          const tabsContainer = phoneApp.querySelector('.phone-tabs');
-          const appScreens = phoneApp.querySelectorAll('.app-screen');
+          // Hide tab bar and tab views, show call screen inside the phone body
+          const phoneBody = phoneApp.querySelector('.phone-screen-body') || phoneApp.querySelector('.screen-body') || phoneApp;
+          const tabsContainer = phoneApp.querySelector('.phone-tabbar');
+          const tabViews = phoneApp.querySelectorAll('.phone-tabview');
+          const hiddenViews = [];
           if (tabsContainer) tabsContainer.style.display = 'none';
-          appScreens.forEach(screen => screen.style.display = 'none');
+          tabViews.forEach(view => {
+            hiddenViews.push({ el: view, display: view.style.display });
+            view.style.display = 'none';
+          });
 
-          phoneApp.appendChild(callScreen);
-          currentDialogueModal = { callScreen, call, optionsContainer, controls, timerInterval, tabsContainer, appScreens, phoneApp };
+          phoneBody.appendChild(callScreen);
+          window.currentDialogueModal = { callScreen, call, optionsContainer, controls, timerInterval, tabsContainer, hiddenViews, phoneApp };
         };
 
-        window.selectDialogueOptionInCall = function(call, optionIndex, optionsContainer, timerInterval) {
+        window.selectDialogueOptionInCall = function(call, optionIndex, optionsContainer) {
+          // Option 1: Check if codes are already unlocked
+          if (optionIndex === 0) {
+            const unlockedStatus = {
+              notes: document.querySelector('.locked-notes-container')?.style.display === 'none',
+              code0400: window.unlockedCode0400 || false,
+              code543: window.unlockedCode543 || false,
+              niiChan: window.niiChanUnlocked || false,
+              whatIf: window.whatIfUnlocked || false
+            };
+
+            if (unlockedStatus.notes || unlockedStatus.code0400 || unlockedStatus.code543 || unlockedStatus.niiChan || unlockedStatus.whatIf) {
+              showToast('Already unlocked!', 1200);
+              setTimeout(() => endDialogueCallInScreen(), 1200);
+              return;
+            }
+          }
+
+          // Option 2: Check if BOTH codes are unlocked
+          if (optionIndex === 1) {
+            if ((window.unlockedCode0400 || false) && (window.unlockedCode543 || false)) {
+              showToast('Already unlocked!', 1200);
+              setTimeout(() => endDialogueCallInScreen(), 1200);
+              return;
+            }
+          }
+
           const option = call.dialogue[optionIndex];
 
           if (option.audio) {
@@ -2069,11 +2210,16 @@
 
         window.endDialogueCallInScreen = function() {
           if (currentDialogueModal) {
-            const { callScreen, timerInterval, tabsContainer, appScreens } = currentDialogueModal;
+            const { callScreen, timerInterval, tabsContainer, hiddenViews } = currentDialogueModal;
             if (timerInterval) clearInterval(timerInterval);
             if (callScreen) callScreen.remove();
             if (tabsContainer) tabsContainer.style.display = '';
-            appScreens.forEach(screen => screen.style.display = '');
+            // Restore only the keypad view (back to keypad UI)
+            if (hiddenViews) {
+              hiddenViews.forEach(({ el, display }) => { el.style.display = display; });
+            }
+            const keypadTabBtn = document.querySelector('#app-phone .phone-tab[data-tab="keypad"]');
+            phoneSwitchTab('keypad', keypadTabBtn);
             currentDialogueModal = null;
           }
           if (currentDialogueAudio) {
@@ -2168,6 +2314,33 @@
         window.selectDialogueOption = function(callIndex, optionIndex, container) {
           const call = window.phoneRecents ? window.phoneRecents[callIndex] : null;
           if (!call) return;
+
+          // Option 1: Check if codes are already unlocked
+          if (optionIndex === 0) {
+            const unlockedStatus = {
+              notes: document.querySelector('.locked-notes-container')?.style.display === 'none',
+              code0400: window.unlockedCode0400 || false,
+              code543: window.unlockedCode543 || false,
+              niiChan: window.niiChanUnlocked || false,
+              whatIf: window.whatIfUnlocked || false
+            };
+
+            if (unlockedStatus.notes || unlockedStatus.code0400 || unlockedStatus.code543 || unlockedStatus.niiChan || unlockedStatus.whatIf) {
+              showToast('Already unlocked!', 1200);
+              setTimeout(() => endDialogueCall('Mom'), 1200);
+              return;
+            }
+          }
+
+          // Option 2: Check if BOTH codes are unlocked
+          if (optionIndex === 1) {
+            if ((window.unlockedCode0400 || false) && (window.unlockedCode543 || false)) {
+              showToast('Already unlocked!', 1200);
+              setTimeout(() => endDialogueCall('Mom'), 1200);
+              return;
+            }
+          }
+
           const option = call.dialogue[optionIndex];
 
           if (option.audio) {
@@ -2243,27 +2416,13 @@
               const typeIcon = call.type === 'missed' ? '↙️' : call.type === 'outgoing' ? '↗️' : '↙️';
               const timeFormatted = call.fullDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
               const callCountText = call.callCount > 1 ? ` (${call.callCount})` : '';
-              const hasDialogue = call.dialogue && call.dialogue.length > 0;
-              const cooldownKey = call.name;
-              const cooldownActive = callDialogueCooldowns[cooldownKey];
-              const isClickable = call.type === 'missed' || (hasDialogue && (!cooldownActive || cooldownActive < Date.now()));
-              const onclickAttr = isClickable ? (hasDialogue ? `onclick="openDialogueModal(${call.index})"` : `onclick="playCallRecording(${call.index})"`) : '';
-              const cursorStyle = isClickable ? 'cursor: pointer;' : 'cursor: default; opacity: 0.7;';
-
-              let subtitle = call.number || '';
-              if (cooldownActive && cooldownActive > Date.now()) {
-                const remaining = Math.ceil((cooldownActive - Date.now()) / 1000);
-                subtitle = `Call available in ${remaining}s`;
-              } else if (hasDialogue) {
-                subtitle = 'Dialogue available';
-              }
 
               html += `
-                <div ${onclickAttr} style="padding: 12px; background: #1a1a1a; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; ${cursorStyle}">
+                <div class="recents-call-item" data-number="${call.number || ''}" style="padding: 12px; background: #1a1a1a; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer;">
                   <div style="font-size: 18px;">${typeIcon}</div>
                   <div style="flex: 1;">
                     <div style="color: #fff; font-weight: 600;">${call.name}${callCountText}</div>
-                    <div style="font-size: 12px; color: #aaa;">${subtitle}</div>
+                    <div style="font-size: 12px; color: #aaa;">${call.number || ''}</div>
                   </div>
                   <div style="text-align: right; font-size: 12px; color: #aaa;">${timeFormatted}</div>
                 </div>
@@ -2273,6 +2432,14 @@
 
           html += '</div>';
           recentsContainer.innerHTML = html;
+
+          // Add event listeners to all recents call items
+          recentsContainer.querySelectorAll('.recents-call-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+              const number = item.dataset.number;
+              if (number) goToKeypadWithNumber(number);
+            });
+          });
         }
 
         // ==================== MUSIC APP ====================
@@ -2984,4 +3151,156 @@
             pinInput = '';
             updatePinDisplay();
           }
+        }
+
+        // Ending Modal Functions
+        function showEndingModal() {
+          const modal = document.getElementById('endingModal');
+          if (modal) {
+            modal.style.display = 'flex';
+          }
+        }
+
+        window.chooseEnding = function(chosenEnding) {
+          if (chosenEnding) {
+            // User chose to end the game
+            localStorage.setItem('gameEnded', 'true');
+            resetPhone();
+            showThirdEnding();
+          } else {
+            // User chose to continue
+            const modal = document.getElementById('endingModal');
+            if (modal) {
+              modal.style.display = 'none';
+            }
+          }
+        };
+
+        // Track if phone has been reset
+        let phoneHasBeenReset = false;
+
+        function resetPhone() {
+          // Mark phone as reset so codes won't work
+          phoneHasBeenReset = true;
+
+          // Clear notes
+          const notesList = document.querySelector('#app-notes .notes-list');
+          if (notesList) {
+            notesList.innerHTML = '<div class="loading">No notes</div>';
+          }
+          // Clear locked notes completely
+          const lockedNotesContent = document.getElementById('locked-notes-content');
+          if (lockedNotesContent) {
+            lockedNotesContent.innerHTML = '<div class="locked-notes-section"><div style="color: #999;">No locked notes</div></div>';
+          }
+          const lockedNotesContainer = document.querySelector('.locked-notes-container');
+          if (lockedNotesContainer) {
+            lockedNotesContainer.style.display = 'block';
+            lockedNotesContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">All data has been cleared</div>';
+          }
+
+          // Clear messages
+          const messagesList = document.querySelector('#app-messages .message-list');
+          if (messagesList) {
+            messagesList.innerHTML = '<div class="loading">No messages</div>';
+          }
+
+          // Clear calls
+          const callsList = document.querySelector('#phoneRecents .recents-list');
+          if (callsList) {
+            callsList.innerHTML = '<div class="loading">No call history</div>';
+          }
+
+          // Clear contacts - both UI and data
+          const phoneContactsList = document.querySelector('#app-contacts .contacts-list');
+          if (phoneContactsList) {
+            phoneContactsList.innerHTML = '<div class="loading">No contacts</div>';
+          }
+          const phoneContactsApp = document.getElementById('phoneContacts');
+          if (phoneContactsApp) {
+            phoneContactsApp.innerHTML = '<div style="padding: 12px;"><p>No contacts</p></div>';
+          }
+          // Clear the phoneContacts data array
+          phoneContacts.length = 0;
+
+          // Clear calendar/events (keep functional, just no events)
+          const calendarBody = document.querySelector('#app-calendar .screen-body');
+          if (calendarBody) {
+            calendarBody.innerHTML = '<p><i>[No events]</i></p>';
+          }
+
+          // Clear music
+          const musicBody = document.querySelector('#app-ytmusic .screen-body');
+          if (musicBody) {
+            musicBody.innerHTML = '<div class="loading">No playlists</div>';
+          }
+
+          // Clear clock/alarms
+          const clockBody = document.querySelector('#app-clock .screen-body');
+          if (clockBody) {
+            clockBody.innerHTML = '<div class="loading">No alarms</div>';
+          }
+
+          // Clear camera/selfies - both UI and data
+          const cameraBody = document.querySelector('#app-camera .screen-body');
+          if (cameraBody) {
+            const cameraThumbnail = cameraBody.querySelector('#cameraThumbnail');
+            if (cameraThumbnail) {
+              cameraThumbnail.style.backgroundImage = 'none';
+            }
+            // Clear the camera-data JSON script
+            const cameraDataScript = cameraBody.querySelector('script#camera-data');
+            if (cameraDataScript) {
+              cameraDataScript.textContent = JSON.stringify({ selfies: [], videos: [] });
+            }
+          }
+          // Clear the selfiePhotos array completely
+          selfiePhotos.length = 0;
+          shuffledPhotos = [];
+          shufflePosition = 0;
+
+          // Clear gallery
+          const galleryBody = document.querySelector('#app-gallery .screen-body');
+          if (galleryBody) {
+            galleryBody.innerHTML = '<p><i>[Gallery is empty]</i></p>';
+          }
+
+          // Reset all unlock flags (locked codes won't work)
+          window.niiChanUnlocked = false;
+          window.whatIfUnlocked = false;
+          window.unlockedCode543 = false;
+          window.unlockedCode0400 = false;
+          lockedNotesUnlocked = false;
+
+          // Clear stored data
+          window.__messagesStore = {};
+          messageThreads = {};
+          window.phoneRecents = [];
+        }
+
+        function showThirdEnding() {
+          const modal = document.getElementById('endingModal');
+          if (modal) {
+            const content = modal.querySelector('.ending-modal-content');
+            content.innerHTML = `
+              <div class="ending-modal-text">You chose to end the story...</div>
+              <div style="color: #00a896; margin-top: 20px; font-size: 14px; line-height: 1.6;">
+                Sometimes, accepting that you can't change the past is the first step forward.
+              </div>
+              <div style="color: #8b949e; margin-top: 16px; font-size: 12px;">
+                Refresh the page to start over.
+              </div>
+              <button onclick="document.getElementById('endingModal').style.display='none'" style="background: #00a896; color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 24px; font-size: 14px;">Close</button>
+            `;
+            modal.style.display = 'flex';
+          }
+        }
+
+        // Check if game was ended previously
+        if (localStorage.getItem('gameEnded') === 'true') {
+          document.addEventListener('DOMContentLoaded', () => {
+            resetPhone();
+            showThirdEnding();
+            localStorage.removeItem('gameEnded');
+          });
         }

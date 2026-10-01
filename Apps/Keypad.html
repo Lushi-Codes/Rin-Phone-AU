@@ -209,32 +209,8 @@
           callBtn.addEventListener('click', () => {
             const n = (getDisplayValue(display) || '').trim();
             if (!n) { alert('Enter a number to call'); return; }
-
-            // Ensure phoneRecents is loaded
-            if (!window.phoneRecents || window.phoneRecents.length === 0) {
-              window.loadPhoneRecentsFromFragment();
-            }
-
-            // Check if this number matches a contact with dialogue
-            if (Array.isArray(window.phoneRecents) && window.phoneRecents.length > 0) {
-              const contactName = n.replace(/[^\w\s]/g, '').toLowerCase();
-              const dialogueCall = window.phoneRecents.find(call =>
-                call.dialogue && call.dialogue.length > 0 &&
-                (call.name.toLowerCase().includes(contactName) ||
-                 contactName.includes(call.name.toLowerCase()))
-              );
-
-              if (dialogueCall) {
-                window.openDialogueModal(dialogueCall.index);
-                updateDisplay('');
-                return;
-              }
-            }
-
-            const hasPlus = n.startsWith('+');
-            const norm = (hasPlus ? '+' : '') + n.replace(/[^\d]/g, '');
-            if (window.showToast) window.showToast('Calling ' + n, 1200);
-            if (norm) window.location.href = 'tel:' + norm;
+            window.dialNumber(n);
+            updateDisplay('');
           });
         }
 

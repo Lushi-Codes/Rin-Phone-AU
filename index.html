@@ -307,6 +307,37 @@
     <div id="app-clock" class="app-screen"><div class="screen-header"><button class="back-btn" onclick="closeApp('app-clock')">‹ Back</button><div class="screen-title">Clock</div><div style="width:50px;"></div></div><div class="screen-body"></div></div>
     <div id="app-calendar" class="app-screen"><div class="screen-header"><button class="back-btn" onclick="closeApp('app-calendar')">‹ Back</button><div class="screen-title">Calendar</div><div style="width:50px;"></div></div><div class="screen-body"><p>• Oct 10: Nii-chan's Birthday 🎂</p><p>• Sep 09: Rin's Birthday ⚽</p></div></div>
 
+    <!-- Ending Modal -->
+    <div id="endingModal" class="ending-modal" style="display: none;">
+      <div class="ending-modal-content">
+        <div class="ending-modal-text">Do you wish to end the story?</div>
+        <div class="ending-modal-buttons">
+          <button class="ending-btn-yes" onclick="chooseEnding(true)">Yes</button>
+          <button class="ending-btn-no" onclick="chooseEnding(false)">No</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instructions Panel (positioned outside to the left) -->
+    <div class="instructions-panel">
+      <div class="instructions-header">"Help Rin remember his past with Sae... Or not"</div>
+      <div class="instructions-content">
+        <div class="instructions-section">
+          <h3>Objectives:</h3>
+          <ul>
+            <li>Explore Rin's phone</li>
+            <li>Find clues to unlock secrets</li>
+          </ul>
+        </div>
+        <div class="instructions-section">
+          <h3>Help:</h3>
+          <p>>> Check messages to know who to ask for help</p>
+
+          <p>*3 different endings that will deepen decision and progress</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- soft navigation keys (Back / Home / Apps) -->
