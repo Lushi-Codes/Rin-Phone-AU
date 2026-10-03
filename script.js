@@ -52,7 +52,10 @@
         'app-camera': 'camera',
         'app-gallery': 'gallery',
         'app-notes': 'notes',
-        'app-ytmusic': 'music'
+        'app-ytmusic': 'music',
+        'app-phone': 'phone',
+        'app-messages': 'messages',
+        'app-contacts': 'contacts'
       };
       return mapping[appId] || appId;
     }
@@ -81,6 +84,11 @@
         if (badge) badge.remove();
       }
       delete window.appNotifications[appId];
+
+      // Check if all codes unlocked and all badges cleared for Sae notification
+      if (Object.keys(window.appNotifications).length === 0) {
+        setTimeout(() => triggerSaeMissedCallNotification(), 10000);
+      }
     }
 
     function clearNotificationTimer(appId) {
@@ -92,9 +100,350 @@
 
     function removeNotificationAfterDelay(appId) {
       clearNotificationTimer(appId);
-      window.notificationTimers[appId] = setTimeout(() => {
-        removeNotification(appId);
+      // Remove notification immediately when opening app
+      removeNotification(appId);
+    }
+
+    function checkAllCodesAndBadgesUnlocked() {
+      const allCodesUnlocked =
+        window.unlockedCode543 &&
+        window.unlockedCode0400 &&
+        window.lockedNotesUnlocked;
+
+      const allBadgesCleared = Object.keys(window.appNotifications).length === 0;
+
+      return allCodesUnlocked && allBadgesCleared;
+    }
+
+    function triggerSaeMissedCallNotification() {
+      const code543 = window.unlockedCode543;
+      const code0400 = window.unlockedCode0400;
+      const notes = window.lockedNotesUnlocked;
+      const badgeCount = Object.keys(window.appNotifications).length;
+
+      showToast(`543:${code543} 0400:${code0400} 1010:${notes} Badges:${badgeCount}`, 3000);
+
+      // Only trigger once
+      if (window.saeNotificationTriggered) {
+        showToast('Already triggered', 1000);
+        return;
+      }
+
+      if (checkAllCodesAndBadgesUnlocked()) {
+        window.saeNotificationTriggered = true;
+        // showToast('✓ Sae notification showing!', 2000);
+        showSaeNotification();
+        addSaeCallToRecents();
+      } else {
+        showToast('Not all conditions met', 1000);
+      }
+    }
+
+    function showSaeNotification() {
+      // Prevent duplicates
+      if (document.getElementById('saeNotification')) return;
+
+      const notification = document.createElement('div');
+      notification.id = 'saeNotification';
+      notification.className = 'sae-notification';
+      notification.innerHTML = `
+        <div class="sae-notification-content">
+          <div class="sae-notification-avatar">S</div>
+          <div class="sae-notification-main">
+            <div class="sae-notification-name">Shitty Aniki</div>
+            <div class="sae-notification-text">Missed call</div>
+          </div>
+          <button class="sae-notification-close" onclick="window.closeSaeNotification()">×</button>
+        </div>
+      `;
+
+      const phoneFrame = document.querySelector('.phone-frame');
+      if (phoneFrame) {
+        phoneFrame.appendChild(notification);
+
+        // Trigger animation
+        setTimeout(() => {
+          notification.classList.add('slide-down');
+        }, 10);
+
+        // Auto-dismiss after 10 seconds
+        setTimeout(() => {
+          window.closeSaeNotification();
+        }, 10000);
+      }
+    }
+
+    window.closeSaeNotification = function() {
+      const notification = document.getElementById('saeNotification');
+      if (notification) {
+        notification.classList.remove('slide-down');
+        notification.classList.add('slide-up');
+        setTimeout(() => notification.remove(), 300);
+      }
+    };
+
+    function addSaeCallToRecents() {
+      if (!window.phoneRecents) {
+        loadPhoneRecentsFromFragment();
+      }
+
+      // Check if Shitty Aniki call already exists
+      const saeCallExists = window.phoneRecents && window.phoneRecents.some(call =>
+        call.name === 'Shitty Aniki' && call.datetime === '2019-03-10T08:00'
+      );
+
+      if (!saeCallExists && window.phoneRecents) {
+        const fullDate = new Date('2019-03-10T08:00');
+        const saeCall = {
+          name: 'Shitty Aniki',
+          number: '+34 698 07 41 81',
+          type: 'missed',
+          datetime: '2019-03-10T08:00',
+          count: 1,
+          audio: './Gallery/Audio/sae_missed_call.mp3',
+          callCount: 1,
+          dialogue: null,
+          fullDate: fullDate,
+          date: fullDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        };
+
+        window.phoneRecents.unshift(saeCall); // Add to beginning (most recent)
+
+        // Add notification badge to Phone app
+        const phoneIcon = document.querySelector('[data-app="phone"]');
+        if (phoneIcon) {
+          const badge = document.createElement('span');
+          badge.className = 'notification-badge';
+          badge.textContent = '';
+          if (!phoneIcon.querySelector('.notification-badge')) {
+            phoneIcon.appendChild(badge);
+          }
+          window.appNotifications['app-phone'] = true;
+        }
+
+        // Re-render recents list if app is open
+        const recentsTab = document.getElementById('phoneRecents');
+        if (recentsTab && recentsTab.style.display !== 'none') {
+          initializeRecents();
+        }
+      }
+    }
+
+    function showMessagesNotification() {
+      const phoneFrame = document.querySelector('.phone-frame');
+      if (!phoneFrame) return;
+
+      const notification = document.createElement('div');
+      notification.id = 'messagesNotification';
+      notification.className = 'sae-notification';
+      notification.innerHTML = `
+        <div class="sae-notification-content">
+          <div class="sae-notification-avatar">💬</div>
+          <div class="sae-notification-main">
+            <div class="sae-notification-name">Shitty Aniki</div>
+            <div class="sae-notification-text">New message</div>
+          </div>
+          <button class="sae-notification-close" onclick="window.closeMessagesNotification()">×</button>
+        </div>
+      `;
+
+      phoneFrame.appendChild(notification);
+
+      // Trigger animation
+      setTimeout(() => {
+        notification.classList.add('slide-down');
+      }, 10);
+
+      // Auto-dismiss after 10 seconds
+      setTimeout(() => {
+        window.closeMessagesNotification();
       }, 10000);
+
+      // Add the message to the Messages app
+      addSaeMessageToMessages();
+    }
+
+    window.closeMessagesNotification = function() {
+      const notification = document.getElementById('messagesNotification');
+      if (notification) {
+        notification.classList.remove('slide-down');
+        notification.classList.add('slide-up');
+        setTimeout(() => notification.remove(), 300);
+      }
+    };
+
+    function addSaeMessageToMessages() {
+      const messageData = {
+        sender: "them",
+        time: "01:26 AM",
+        date: "March 20, 2019",
+        text: "If you're reading this, it means they finally gave your phone back. I know I had no right to go through your things... but reading your notes, the photos, seeing how you held onto every single piece of us... it destroyed me, Rin. It completely crushed me.\n\nI spoke to the doctor. He said you lost your memory... that you don't know who I am anymore. They say it might be temporary, but God, Rin, please... please try to remember. I know I ruined you, I know I'm the last person you ever wanted to see, but don't erase me like this. Hate me, scream at me, beat me to a pulp. Do whatever you need to do, but please don't forget me. I can't bear the thought of becoming a complete stranger to you.\n\nI'm sending this because I just need you to know the truth. I didn't say those things that night because I stopped caring about you. It was the exact opposite. I did it because I saw the absolute monster of a striker inside you, a talent so pure it made my own dreams look hollow. I am the lukewarm failure here, Rin. Not you. I couldn't let you ruin your potential just to follow in the footsteps of a brother who wasn't strong enough.\n\nI smashed your dream because I wanted you to build a bigger one. But I was foolish. I didn't realize that in doing so, I would destroy you entirely. Seeing the way you look at the world now, filled with pure resentment and pain, is a weight I'll carry for the rest of my life. Walking away from you on that snowy night ripped my heart out of my chest. I wanted to turn around. God, I wanted to turn around and hold you so badly.\n\nWhat we have between us... I know it isn't normal. The world would call it wrong. But loving you is the only real, sacred thing I've ever had. I would choose you in every lifetime, under any sky, even if it always ends in this heartbreak. Everything I did, I did because your existence means more to me than my own.\n\nI'm so sorry for breaking you, Rin. I'm so sorry I couldn't be the hero you deserved.\n\nI'll be at the riverbank at sunset. Every day, until my time in Japan runs out and I have to board that plane. If there is even a tiny piece of you that still remembers who we used to be, please come.\n\nI love you, Rin. Always."
+      };
+
+      // Add message to messageThreads
+      if (window.messageThreads && window.messageThreads['shitty-aniki']) {
+        window.messageThreads['shitty-aniki'].messages.push(messageData);
+      }
+
+      // Add message to window.__messagesStore if it exists
+      if (window.__messagesStore && window.__messagesStore['shitty-aniki']) {
+        window.__messagesStore['shitty-aniki'].messages = window.__messagesStore['shitty-aniki'].messages || [];
+        window.__messagesStore['shitty-aniki'].messages.push(messageData);
+      }
+
+      // Add unread badge to the Shitty Aniki message item in the DOM
+      const messageItem = document.querySelector(`#app-messages .message-item[data-id="shitty-aniki"]`);
+      if (messageItem) {
+        const messageMeta = messageItem.querySelector('.message-meta');
+        if (messageMeta) {
+          // Remove existing badge if any
+          const existingBadge = messageMeta.querySelector('.unread-badge');
+          if (existingBadge) existingBadge.remove();
+
+          // Add new badge with count 1
+          const badge = document.createElement('div');
+          badge.className = 'unread-badge';
+          badge.textContent = '1';
+          messageMeta.appendChild(badge);
+        }
+      }
+
+      // Re-render messages if the app is open
+      const messagesApp = document.getElementById('app-messages');
+      if (messagesApp && messagesApp.classList.contains('active')) {
+        loadMessages();
+      }
+    }
+
+    function showSaeCallScreen(call) {
+      const recentsTab = document.getElementById('phoneRecents');
+      if (!recentsTab) return;
+
+      let callScreen = document.getElementById('sae-call-screen');
+
+      // If call screen doesn't exist, create it
+      if (!callScreen) {
+        callScreen = document.createElement('div');
+        callScreen.id = 'sae-call-screen';
+        callScreen.style.cssText = 'display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; background: #222; z-index: 100;';
+
+        callScreen.innerHTML = `
+          <div style="flex: 0; padding: 32px 16px; text-align: center; border-bottom: 1px solid #444;">
+            <div id="sae-call-timer" style="color: #aaa; font-size: 14px; margin-bottom: 8px;">00:00</div>
+            <div style="color: #fff; font-size: 24px; font-weight: 600;">Shitty Aniki</div>
+          </div>
+          <div style="flex: 1; padding: 24px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;">
+            <audio id="sae-call-audio" style="width: 100%; max-width: 300px;">
+              <source src="./Gallery/Audio/sae_missed_call.mp3" type="audio/mpeg">
+            </audio>
+            <button id="sae-play-btn" style="background: #00a896; color: #000; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;">
+              ▶️ Play
+            </button>
+          </div>
+          <div style="flex: 0; padding: 16px; border-top: 1px solid #444; display: flex; gap: 12px; justify-content: center;">
+            <button id="sae-end-btn" style="background: none; border: 2px solid #ff6b6b; color: #ff6b6b; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+              End Call
+            </button>
+          </div>
+        `;
+        recentsTab.appendChild(callScreen);
+      }
+
+      // Clear previous timer
+      clearInterval(window.saeCallTimerInterval);
+
+      // Reset and show the call screen
+      let seconds = 0;
+      const timerElement = document.getElementById('sae-call-timer');
+      const audioElement = document.getElementById('sae-call-audio');
+      const playBtn = document.getElementById('sae-play-btn');
+      const endBtn = document.getElementById('sae-end-btn');
+
+      if (!timerElement || !audioElement || !playBtn || !endBtn) {
+        showToast('Call elements missing', 1000);
+        return;
+      }
+
+      // Update timer
+      window.saeCallTimerInterval = setInterval(() => {
+        seconds++;
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        timerElement.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }, 1000);
+
+      // Play/Pause button
+      playBtn.onclick = () => {
+        if (audioElement.paused) {
+          audioElement.play();
+          playBtn.textContent = '⏸️ Pause';
+        } else {
+          audioElement.pause();
+          playBtn.textContent = '▶️ Play';
+        }
+      };
+
+      audioElement.onended = () => {
+        playBtn.textContent = '▶️ Play';
+      };
+
+      // End Call button
+      endBtn.onclick = () => {
+        clearInterval(window.saeCallTimerInterval);
+        audioElement.pause();
+        callScreen.style.display = 'none';
+
+        // Restore recents list
+        const recentsContainer = recentsTab.querySelector('.recents-list');
+        if (recentsContainer) {
+          recentsContainer.style.display = 'flex';
+        }
+
+        // Remove Calls app notification badge
+        removeNotification('phone');
+
+        // Add Messages app notification badge
+        const messagesIcon = document.querySelector('[data-app="messages"]');
+        if (messagesIcon) {
+          messagesIcon.classList.add('has-notification');
+          const badge = document.createElement('div');
+          badge.className = 'notification-badge';
+          badge.textContent = '!';
+          if (!messagesIcon.querySelector('.notification-badge')) {
+            messagesIcon.appendChild(badge);
+          }
+          window.appNotifications['messages'] = true;
+        }
+
+        // Show Messages notification after 1 second
+        setTimeout(() => {
+          showMessagesNotification();
+        }, 1000);
+
+        // Switch to Keypad view
+        const keypadTab = document.getElementById('phoneKeypad');
+        const contactsTab = document.getElementById('phoneContacts');
+
+        if (keypadTab) keypadTab.style.display = 'flex';
+        if (recentsTab) recentsTab.style.display = 'none';
+        if (contactsTab) contactsTab.style.display = 'none';
+
+        // Update tab buttons
+        const tabs = document.querySelectorAll('.phone-tab');
+        tabs.forEach(tab => {
+          tab.classList.remove('active');
+          if (tab.dataset.tab === 'keypad') {
+            tab.classList.add('active');
+          }
+        });
+      };
+
+      // Show the call screen
+      const recentsContainer = recentsTab.querySelector('.recents-list');
+      if (recentsContainer) {
+        recentsContainer.style.display = 'none';
+      }
+      callScreen.style.display = 'flex';
     }
 
     function openApp(appId, el) {
@@ -181,6 +530,10 @@
               endDialogueCall('Mom');
             }
           }
+
+          // Clear notification timer for this app
+          const dataAppValue = getDataAppValue(appId);
+          clearNotificationTimer(dataAppValue);
 
           const el = document.getElementById(appId);
           if (el) {
@@ -302,6 +655,11 @@
           const toShow = document.getElementById(views[tab]);
           if (toShow) {
             toShow.style.display = 'block';
+            // Ensure recents-list is shown when switching to recents
+            if (tab === 'recents') {
+              const recentsList = toShow.querySelector('.recents-list');
+              if (recentsList) recentsList.style.display = 'flex';
+            }
             // If showing keypad, move focus there so keyboard input works immediately
             if (tab === 'keypad') {
               const kp = document.getElementById('phoneKeypad');
@@ -639,7 +997,7 @@
 
                 // Check for codes
                 const code = n.toUpperCase();
-                if (code === 'G43') {
+                if (code === 'G43' || code === '543') {
                   if (phoneHasBeenReset) {
                     showToast('Code no longer works', 1500);
                     setDisplay('0');
@@ -1355,7 +1713,7 @@
           }
         }
 
-        let lockedNotesUnlocked = false; // resets on every page refresh (not persisted)
+        window.lockedNotesUnlocked = false; // resets on every page refresh (not persisted)
 
         // Initialize Nii-chan and What if albums - reset on every page refresh
         window.niiChanUnlocked = false;
@@ -1371,7 +1729,7 @@
           if (password === correctPassword) {
             document.querySelector('.locked-notes-container').style.display = 'none';
             document.getElementById('locked-notes-content').style.display = 'block';
-            lockedNotesUnlocked = true;
+            window.lockedNotesUnlocked = true;
             loadSecretNotes();
             errorEl.style.display = 'none';
           } else {
@@ -1381,7 +1739,7 @@
         }
 
         function initializeLockedNotes() {
-          if (lockedNotesUnlocked) {
+          if (window.lockedNotesUnlocked) {
             document.querySelector('.locked-notes-container').style.display = 'none';
             document.getElementById('locked-notes-content').style.display = 'block';
             loadSecretNotes();
@@ -1921,6 +2279,13 @@
           const thread_el = document.getElementById('conversationThread');
           const items = document.querySelectorAll('#app-messages .message-item');
 
+          // Clear unread badge for this conversation
+          const messageItem = document.querySelector(`#app-messages .message-item[data-id="${id}"]`);
+          if (messageItem) {
+            const badge = messageItem.querySelector('.unread-badge');
+            if (badge) badge.remove();
+          }
+
           if (thread_el) {
             thread_el.style.display = 'flex';
             items.forEach(item => item.style.display = 'none');
@@ -2261,6 +2626,40 @@
           } catch (err) {
             console.error('Error loading calls:', err);
           }
+
+          // Load sae-call-screen from Calls.html if it exists and not already in DOM
+          const saeScreen = document.querySelector('#phoneRecents #sae-call-screen');
+          if (!saeScreen) {
+            // Try to find it in the recents container or make it accessible
+            const phoneRecentsDiv = document.getElementById('phoneRecents');
+            if (phoneRecentsDiv) {
+              // Clone and append if not found
+              const newScreen = document.createElement('div');
+              newScreen.id = 'sae-call-screen';
+              newScreen.style.cssText = 'display: none; flex-direction: column; height: 100%;';
+
+              newScreen.innerHTML = `
+                <div style="flex: 0; padding: 32px 16px; text-align: center; border-bottom: 1px solid #444;">
+                  <div id="sae-call-timer" style="color: #aaa; font-size: 14px; margin-bottom: 8px;">00:00</div>
+                  <div style="color: #fff; font-size: 24px; font-weight: 600;">Shitty Aniki</div>
+                </div>
+                <div style="flex: 1; padding: 24px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;">
+                  <audio id="sae-call-audio" style="width: 100%; max-width: 300px;">
+                    <source src="./Gallery/Audio/sae_missed_call.mp3" type="audio/mpeg">
+                  </audio>
+                  <button id="sae-play-btn" style="background: #00a896; color: #000; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;">
+                    ▶️ Play
+                  </button>
+                </div>
+                <div style="flex: 0; padding: 16px; border-top: 1px solid #444; display: flex; gap: 12px; justify-content: center;">
+                  <button id="sae-end-btn" style="background: none; border: 2px solid #ff6b6b; color: #ff6b6b; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    End Call
+                  </button>
+                </div>
+              `;
+              phoneRecentsDiv.appendChild(newScreen);
+            }
+          }
         }
         window.loadPhoneRecentsFromFragment = loadPhoneRecentsFromFragment;
 
@@ -2416,12 +2815,15 @@
               const typeIcon = call.type === 'missed' ? '↙️' : call.type === 'outgoing' ? '↗️' : '↙️';
               const timeFormatted = call.fullDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
               const callCountText = call.callCount > 1 ? ` (${call.callCount})` : '';
+              // Only badge the newest Shitty Aniki call
+              const isBadged = call.name === 'Shitty Aniki' && call.datetime === '2019-03-10T08:00';
+              const badgeHtml = isBadged ? `<span style="display:inline-block;width:10px;height:10px;background:#ff0000;border-radius:50%;margin-left:8px;"></span>` : '';
 
               html += `
-                <div class="recents-call-item" data-number="${call.number || ''}" style="padding: 12px; background: #1a1a1a; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                <div class="recents-call-item" data-number="${call.number || ''}" data-name="${call.name || ''}" style="padding: 12px; background: #1a1a1a; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer;">
                   <div style="font-size: 18px;">${typeIcon}</div>
                   <div style="flex: 1;">
-                    <div style="color: #fff; font-weight: 600;">${call.name}${callCountText}</div>
+                    <div style="color: #fff; font-weight: 600; display: flex; align-items: center;">${call.name}${callCountText}${badgeHtml}</div>
                     <div style="font-size: 12px; color: #aaa;">${call.number || ''}</div>
                   </div>
                   <div style="text-align: right; font-size: 12px; color: #aaa;">${timeFormatted}</div>
@@ -2436,7 +2838,18 @@
           // Add event listeners to all recents call items
           recentsContainer.querySelectorAll('.recents-call-item').forEach(item => {
             item.addEventListener('click', (e) => {
+              const name = item.dataset.name;
               const number = item.dataset.number;
+
+              // Special handling for Shitty Aniki - show audio call screen
+              if (name === 'Shitty Aniki') {
+                const saeCall = window.phoneRecents.find(call => call.name === 'Shitty Aniki' && call.datetime === '2019-03-10T08:00');
+                if (saeCall && saeCall.audio) {
+                  showSaeCallScreen(saeCall);
+                }
+                return;
+              }
+
               if (number) goToKeypadWithNumber(number);
             });
           });
@@ -3270,7 +3683,7 @@
           window.whatIfUnlocked = false;
           window.unlockedCode543 = false;
           window.unlockedCode0400 = false;
-          lockedNotesUnlocked = false;
+          window.lockedNotesUnlocked = false;
 
           // Clear stored data
           window.__messagesStore = {};
@@ -3281,17 +3694,11 @@
         function showThirdEnding() {
           const modal = document.getElementById('endingModal');
           if (modal) {
-            const content = modal.querySelector('.ending-modal-content');
-            content.innerHTML = `
-              <div class="ending-modal-text">You chose to end the story...</div>
-              <div style="color: #00a896; margin-top: 20px; font-size: 14px; line-height: 1.6;">
-                Sometimes, accepting that you can't change the past is the first step forward.
-              </div>
-              <div style="color: #8b949e; margin-top: 16px; font-size: 12px;">
-                Refresh the page to start over.
-              </div>
-              <button onclick="document.getElementById('endingModal').style.display='none'" style="background: #00a896; color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 24px; font-size: 14px;">Close</button>
-            `;
+            // Hide the choice section, show the third ending
+            const choiceSection = document.getElementById('endingChoice');
+            const thirdSection = document.getElementById('endingThird');
+            if (choiceSection) choiceSection.style.display = 'none';
+            if (thirdSection) thirdSection.style.display = 'block';
             modal.style.display = 'flex';
           }
         }

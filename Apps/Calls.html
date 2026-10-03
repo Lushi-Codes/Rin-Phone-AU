@@ -185,3 +185,29 @@
 }
 </script>
 
+<!-- Shitty Aniki Call Screen UI -->
+<div id="sae-call-screen" style="display: none; flex-direction: column; height: 100%;">
+  <!-- Header with timer -->
+  <div style="flex: 0; padding: 32px 16px; text-align: center; border-bottom: 1px solid #444;">
+    <div id="sae-call-timer" style="color: #aaa; font-size: 14px; margin-bottom: 8px;">00:00</div>
+    <div style="color: #fff; font-size: 24px; font-weight: 600;">Shitty Aniki</div>
+  </div>
+
+  <!-- Audio Player Section -->
+  <div style="flex: 1; padding: 24px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;">
+    <audio id="sae-call-audio" style="width: 100%; max-width: 300px;">
+      <source src="./Gallery/Audio/sae_missed_call.mp3" type="audio/mpeg">
+    </audio>
+
+    <button id="sae-play-btn" style="background: #00a896; color: #000; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;">
+      ▶️ Play
+    </button>
+  </div>
+
+  <!-- End Call Button -->
+  <div style="flex: 0; padding: 16px; border-top: 1px solid #444; display: flex; gap: 12px; justify-content: center;">
+    <button id="sae-end-btn" style="background: none; border: 2px solid #ff6b6b; color: #ff6b6b; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+      End Call
+    </button>
+  </div>
+</div>

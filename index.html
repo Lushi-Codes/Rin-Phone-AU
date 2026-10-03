@@ -310,10 +310,24 @@
     <!-- Ending Modal -->
     <div id="endingModal" class="ending-modal" style="display: none;">
       <div class="ending-modal-content">
-        <div class="ending-modal-text">Do you wish to end the story?</div>
-        <div class="ending-modal-buttons">
-          <button class="ending-btn-yes" onclick="chooseEnding(true)">Yes</button>
-          <button class="ending-btn-no" onclick="chooseEnding(false)">No</button>
+        <!-- First ending: Yes/No choice -->
+        <div id="endingChoice" class="ending-choice-content">
+          <div class="ending-modal-text">Do you wish to end the story?</div>
+          <div class="ending-modal-buttons">
+            <button class="ending-btn-yes" onclick="chooseEnding(true)">Yes</button>
+            <button class="ending-btn-no" onclick="chooseEnding(false)">No</button>
+          </div>
+        </div>
+        <!-- Third ending: Message after choosing Yes -->
+        <div id="endingThird" class="ending-third-content" style="display: none;">
+          <div class="ending-modal-text">You chose to end the story...</div>
+          <div style="color: #00a896; margin-top: 20px; font-size: 14px; line-height: 1.6;">
+            Sometimes, accepting that you can't change the past is the first step forward.
+          </div>
+          <div style="color: #8b949e; margin-top: 16px; font-size: 12px;">
+            Refresh the page to start over.
+          </div>
+          <button onclick="document.getElementById('endingModal').style.display='none'" style="background: #00a896; color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 24px; font-size: 14px;">Close</button>
         </div>
       </div>
     </div>
@@ -333,7 +347,7 @@
           <h3>Help:</h3>
           <p>>> Check messages to know who to ask for help</p>
 
-          <p>*3 different endings that will deepen decision and progress</p>
+          <p>*3 different endings that will depend on your progress and decision</p>
         </div>
       </div>
     </div>
