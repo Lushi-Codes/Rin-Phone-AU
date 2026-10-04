@@ -318,6 +318,40 @@
             <button class="ending-btn-no" onclick="chooseEnding(false)">No</button>
           </div>
         </div>
+        <!-- Beachside question -->
+        <div id="beachsideQuestion" class="ending-choice-content" style="display: none;">
+          <div class="ending-modal-text">Do you wish to go to the beachside?</div>
+          <div class="ending-modal-buttons">
+            <button class="ending-btn-yes" onclick="chooseBeachside(true)">Yes</button>
+            <button class="ending-btn-no" onclick="chooseBeachside(false)">No</button>
+          </div>
+        </div>
+        
+        <!-- Best Ending (Yes choice) -->
+        <div id="bestEnding" class="ending-third-content" style="display: none;">
+          <div class="ending-modal-text">Best Ending</div>
+          <div style="color: #00a896; margin-top: 20px; font-size: 14px; line-height: 1.6;">
+            You found him at the riverbank. Under the setting sun, you finally remembered everything.
+          </div>
+          <div style="color: #8b949e; margin-top: 16px; font-size: 12px;">
+            Refresh the page to start over.
+          </div>
+          <button onclick="document.getElementById('endingModal').style.display='none'" style="background: #00a896; color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 24px; font-size: 14px;">Close</button>
+        </div>
+
+        <!-- Bad Ending (No choice) -->
+        <div id="badEnding" class="ending-third-content" style="display: none;">
+          <div class="ending-modal-text">Bad Ending</div>
+          <div style="color: #ff6b6b; margin-top: 20px; font-size: 14px; line-height: 1.6;">
+            You chose not to go. The memories remained buried. Some connections are meant to stay lost.
+          </div>
+          <div style="color: #8b949e; margin-top: 16px; font-size: 12px;">
+            Refresh the page to start over.
+          </div>
+          <button onclick="document.getElementById('endingModal').style.display='none'" style="background: #00a896; color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 24px; font-size: 14px;">Close</button>
+        </div>
+
+
         <!-- Third ending: Message after choosing Yes -->
         <div id="endingThird" class="ending-third-content" style="display: none;">
           <div class="ending-modal-text">You chose to end the story...</div>

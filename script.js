@@ -291,9 +291,15 @@
         window.__messagesStore['shitty-aniki'].messages.push(messageData);
       }
 
-      // Add unread badge to the Shitty Aniki message item in the DOM
+      // Update the message item snippet
       const messageItem = document.querySelector(`#app-messages .message-item[data-id="shitty-aniki"]`);
       if (messageItem) {
+        const snippetEl = messageItem.querySelector('.message-snippet');
+        if (snippetEl) {
+          // Show first 100 characters of the new message
+          snippetEl.textContent = messageData.text.substring(0, 100) + '...';
+        }
+
         const messageMeta = messageItem.querySelector('.message-meta');
         if (messageMeta) {
           // Remove existing badge if any
@@ -308,10 +314,13 @@
         }
       }
 
-      // Re-render messages if the app is open
-      const messagesApp = document.getElementById('app-messages');
-      if (messagesApp && messagesApp.classList.contains('active')) {
-        loadMessages();
+      // If the conversation thread is currently open, re-render it
+      const currentThreadId = window.currentThreadId;
+      if (currentThreadId === 'shitty-aniki') {
+        // Re-render the current thread to show the new message
+        if (typeof displayThreadMessages === 'function') {
+          displayThreadMessages('shitty-aniki', true);
+        }
       }
     }
 
@@ -531,6 +540,22 @@
             }
           }
 
+          // Show beachside question if closing Messages app
+          if (appId === 'app-messages') {
+            const el = document.getElementById(appId);
+            if (el) {
+              el.classList.remove('active');
+              el.style.display = 'none';
+            }
+            // Show beachside question after a short delay
+            setTimeout(() => {
+              if (typeof window.showBeachsideQuestion === 'function') {
+                window.showBeachsideQuestion();
+              }
+            }, 300);
+            return;
+          }
+
           // Clear notification timer for this app
           const dataAppValue = getDataAppValue(appId);
           clearNotificationTimer(dataAppValue);
@@ -675,6 +700,15 @@
           const actives = Array.from(document.querySelectorAll('.app-screen.active'));
           if (actives.length) {
             const top = actives[actives.length - 1];
+            // Check if closing Messages app and show beachside question
+            if (top.id === 'app-messages') {
+              top.classList.remove('active');
+              // Show beachside question after a short delay
+              setTimeout(() => {
+                window.showBeachsideQuestion();
+              }, 300);
+              return;
+            }
             top.classList.remove('active');
             return;
           }
@@ -997,7 +1031,7 @@
 
                 // Check for codes
                 const code = n.toUpperCase();
-                if (code === 'G43' || code === '543') {
+                if (code === '543') {
                   if (phoneHasBeenReset) {
                     showToast('Code no longer works', 1500);
                     setDisplay('0');
@@ -1108,7 +1142,7 @@
                   window.niiChanUnlocked = true;
                   window.videoGalleryUnlocked = true;
                   window.unlockedCode543 = true;
-                  showNotifications(['gallery', 'notes', 'messages', 'phone']);
+                  showNotifications(['gallery', 'camera', 'notes']);
                   window.appNotifications['camera'] = true;
                   if (window.loadSecretNotes) window.loadSecretNotes();
                   set('🩷');
@@ -2104,7 +2138,7 @@
         // Conversation content (names, icons, snippets, messages) lives in
         // Apps/Messages.html as a JSON <script id="message-data"> block —
         // parsed into this object and rendered once the fragment loads.
-        let messageThreads = {};
+        window.messageThreads = {};
 
         // Remember scroll position per thread: first open starts at the top
         // (no story spoilers), returning to a thread resumes where they left off.
@@ -2132,7 +2166,7 @@
             return;
           }
 
-          messageThreads = {};
+          window.messageThreads = {};
           const threadView = container.querySelector('#conversationThread');
           container.querySelectorAll('.message-item').forEach(el => el.remove());
 
@@ -2192,7 +2226,7 @@
 
         function displayThreadMessages(id, scrollToBottom = false) {
           const container = document.getElementById('messagesContainer');
-          const thread = messageThreads[id];
+          const thread = window.messageThreads[id];
           if (!container || !thread) return;
 
           container.innerHTML = '';
@@ -2249,10 +2283,12 @@
           }
         }
 
+        window.displayThreadMessages = displayThreadMessages;
+
         function sendThreadMessage(id, text) {
           if (!text.trim()) return;
 
-          const thread = messageThreads[id];
+          const thread = window.messageThreads[id];
           if (!thread) return;
 
           const now = new Date();
@@ -2272,7 +2308,7 @@
         window.currentThreadId = null;
 
         function openThreadView(id) {
-          const thread = messageThreads[id];
+          const thread = window.messageThreads[id];
           if (!thread) return;
 
           window.currentThreadId = id;
@@ -3589,6 +3625,41 @@
           }
         };
 
+        window.chooseBeachside = function(chosenBeachside) {
+          const beachsideQuestion = document.getElementById('beachsideQuestion');
+          const bestEnding = document.getElementById('bestEnding');
+          const badEnding = document.getElementById('badEnding');
+
+          if (beachsideQuestion) beachsideQuestion.style.display = 'none';
+          if (bestEnding) bestEnding.style.display = 'none';
+          if (badEnding) badEnding.style.display = 'none';
+
+          if (chosenBeachside) {
+            // User chose to go to the beachside - show best ending
+            if (bestEnding) bestEnding.style.display = 'block';
+          } else {
+            // User chose not to go - reset phone data and show bad ending
+            resetPhone();
+            if (badEnding) badEnding.style.display = 'block';
+          }
+        };
+
+        window.showBeachsideQuestion = function() {
+          const modal = document.getElementById('endingModal');
+          const beachsideQuestion = document.getElementById('beachsideQuestion');
+          const endingChoice = document.getElementById('endingChoice');
+          const endingThird = document.getElementById('endingThird');
+
+          if (modal && beachsideQuestion) {
+            // Hide other sections
+            if (endingChoice) endingChoice.style.display = 'none';
+            if (endingThird) endingThird.style.display = 'none';
+            // Show beachside question
+            beachsideQuestion.style.display = 'block';
+            modal.style.display = 'flex';
+          }
+        };
+
         // Track if phone has been reset
         let phoneHasBeenReset = false;
 
@@ -3687,7 +3758,7 @@
 
           // Clear stored data
           window.__messagesStore = {};
-          messageThreads = {};
+          window.messageThreads = {};
           window.phoneRecents = [];
         }
 
