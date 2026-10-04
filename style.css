@@ -21,7 +21,7 @@
       gap: 30px;
       align-items: flex-start;
       justify-content: center;
-      flex-direction: row;
+      flex-direction: row-reverse;
       flex-wrap: nowrap;
       width: 100%;
     }
