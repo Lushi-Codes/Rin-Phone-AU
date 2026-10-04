@@ -26,7 +26,7 @@
       width: 100%;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 600px) {
       .main-container {
         flex-direction: column;
         gap: 30px;
@@ -796,7 +796,7 @@
   box-shadow: 0 4px 12px rgba(0, 168, 150, 0.2);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .instructions-panel {
     width: 100%;
     max-height: auto;
