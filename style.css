@@ -21,15 +21,16 @@
       gap: 20px;
       align-items: center;
       justify-content: center;
-      flex-wrap: nowrap;
+      flex-direction: row;
+      flex-wrap: wrap;
       width: 100%;
+      max-width: 720px;
     }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 768px) {
       .main-container {
         flex-direction: column;
-        flex-wrap: wrap;
-        gap: 20px;
+        max-width: 100%;
       }
     }
 
@@ -793,10 +794,10 @@
   box-shadow: 0 4px 12px rgba(0, 168, 150, 0.2);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .instructions-panel {
     width: 100%;
-    max-width: 360px;
+    max-width: none;
     max-height: none;
   }
 }
