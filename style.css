@@ -22,15 +22,14 @@
       align-items: center;
       justify-content: center;
       flex-direction: row;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       width: 100%;
-      max-width: 720px;
     }
 
     @media (max-width: 768px) {
       .main-container {
         flex-direction: column;
-        max-width: 100%;
+        gap: 20px;
       }
     }
 
@@ -797,8 +796,7 @@
 @media (max-width: 768px) {
   .instructions-panel {
     width: 100%;
-    max-width: none;
-    max-height: none;
+    max-height: auto;
   }
 }
 
