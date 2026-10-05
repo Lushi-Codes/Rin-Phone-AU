@@ -12,7 +12,6 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 40px;
     }
 
     /* Main container for responsive layout */
@@ -41,15 +40,12 @@
       background-position: center;
       box-shadow: 0 20px 50px rgba(0,0,0,0.8);
       overflow: hidden;
-      display: flex;
       flex-direction: column;
-      margin-left: 50px;
     }
 
     .instructions-panel {
       order: 1;
       flex-shrink: 0;
-      margin-right: 50px;
     }
 
     @media (max-width: 500px) {
