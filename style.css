@@ -8,32 +8,25 @@
       background-color: #05070d;
       color: #e0f2f1;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      padding: 20px;
-      overflow-x: auto;
+      padding: 40px 20px;
     }
 
     /* Main container for responsive layout */
     .main-container {
-      display: flex;
+      display: grid;
+      grid-template-columns: 300px 1fr 360px;
       gap: 30px;
-      align-items: flex-start;
-      justify-content: flex-start;
-      flex-direction: row-reverse;
-      flex-wrap: nowrap;
-      width: auto;
-      min-width: fit-content;
+      align-items: start;
+      justify-items: center;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
-    @media (max-width: 400px) {
+    @media (max-width: 900px) {
       .main-container {
-        flex-direction: column;
+        grid-template-columns: 1fr;
         gap: 30px;
-        align-items: center;
-        width: 100%;
       }
     }
 
@@ -799,7 +792,7 @@
   box-shadow: 0 4px 12px rgba(0, 168, 150, 0.2);
 }
 
-@media (max-width: 400px) {
+@media (max-width: 900px) {
   .instructions-panel {
     width: 100%;
     max-height: auto;
