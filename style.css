@@ -30,6 +30,19 @@
     .phone-frame {
       order: 2;
       flex-shrink: 0;
+      position: relative;
+      width: 360px;
+      height: 680px;
+      border: 10px solid #1a1c1e;
+      border-radius: 36px;
+      background-color: #0b0f12;
+      background-image: url("https://i.pinimg.com/736x/9d/12/f3/9d12f37301c67ca7064319b80b0e6c2d.jpg");
+      background-size: cover;
+      background-position: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
       margin-left: 50px;
     }
 
@@ -57,25 +70,6 @@
         max-width: 360px;
         margin-right: 0;
       }
-    }
-
-    /* --- Phone Outer Frame --- */
-    .phone-frame {
-      position: relative;
-      width: 360px;
-      height: 680px;
-      border: 10px solid #1a1c1e;
-      border-radius: 36px;
-      background-color: #0b0f12;
-      background-image: url("https://i.pinimg.com/736x/9d/12/f3/9d12f37301c67ca7064319b80b0e6c2d.jpg");
-      background-size: cover;
-      background-position: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      z-index: 1;
     }
 
     /* Slim, low-contrast scrollbars everywhere inside the phone mockup */
