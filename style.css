@@ -39,7 +39,7 @@
       margin-right: 50px;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 500px) {
       .main-container {
         flex-direction: column;
         gap: 50px;
