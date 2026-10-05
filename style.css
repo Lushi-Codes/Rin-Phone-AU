@@ -800,9 +800,8 @@
 .playlist-yt-wrap { margin-top: 12px; border-radius: 12px; overflow: hidden; background: #000; }
 .playlist-yt-wrap iframe { display: block; border: none; }
 
-/* Instructions Panel */
+/* Instructions Panel - STYLING ONLY (layout is controlled by flexbox at top) */
 .instructions-panel {
-  width: 300px;
   padding: 20px;
   background: #0d1117;
   border: 2px solid #00a896;
@@ -815,7 +814,7 @@
   box-shadow: 0 4px 12px rgba(0, 168, 150, 0.2);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 500px) {
   .instructions-panel {
     width: 100%;
     max-height: auto;
