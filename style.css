@@ -14,19 +14,38 @@
     /* Main container for responsive layout */
     .main-container {
       display: grid;
-      grid-template-columns: 300px 1fr 360px;
-      gap: 30px;
+      grid-template-columns: 300px 30px 360px;
+      gap: 0;
       align-items: start;
-      justify-items: center;
       width: 100%;
-      max-width: 1200px;
+      max-width: 700px;
       margin: 0 auto;
+    }
+
+    .phone-frame {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .instructions-panel {
+      grid-column: 1;
+      grid-row: 1;
     }
 
     @media (max-width: 900px) {
       .main-container {
         grid-template-columns: 1fr;
-        gap: 30px;
+        max-width: 100%;
+      }
+
+      .phone-frame {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .instructions-panel {
+        grid-column: 1;
+        grid-row: 2;
       }
     }
 
